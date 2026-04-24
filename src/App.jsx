@@ -6,8 +6,9 @@ import { Users, UserPlus, Trash2, Eye, EyeOff, Play, Skull, Crown, AlertCircle, 
 
 
 // --- DIZIONARIO PAROLE ---
+// --- DIZIONARIO PAROLE AGGIORNATO ---
 const wordPairs = [
-  // CIBO E BEVANDE (1-200)
+  // CIBO E BEVANDE (Esistenti)
   ['Pizza', 'Pasta'], ['Hamburger', 'Hotdog'], ['Gelato', 'Sorbetto'], ['Vino', 'Birra'],
   ['Zucchero', 'Sale'], ['Burro', 'Margarina'], ['Caffè', 'Tè'], ['Arancia', 'Mandarino'],
   ['Mela', 'Pera'], ['Biscotto', 'Pasticcino'], ['Pane', 'Focaccia'], ['Sushi', 'Sashimi'],
@@ -53,7 +54,7 @@ const wordPairs = [
   ['Menta', 'Eucalipto'], ['Camomilla', 'Tisana'], ['Decotto', 'Infuso'], ['Nocino', 'Limoncello'],
   ['Sambuca', 'Anisetta'], ['Vermouth', 'Martini'], ['Spritz', 'Negroni'], ['Mojito', 'Caipirinha'],
 
-  // OGGETTI E CASA (201-450)
+  // OGGETTI E CASA (Esistenti)
   ['Sedia', 'Poltrona'], ['Tavolo', 'Scrivania'], ['Letto', 'Divano'], ['Armadio', 'Cassettiera'],
   ['Lampada', 'Lampadario'], ['Specchio', 'Quadro'], ['Tenda', 'Persiana'], ['Tappeto', 'Moquette'],
   ['Orologio', 'Sveglia'], ['Vaso', 'Cestino'], ['Cuscino', 'Coperta'], ['Padella', 'Pentola'],
@@ -90,7 +91,7 @@ const wordPairs = [
   ['Bigodino', 'Molletta'], ['Elastico', 'Cerchietto'], ['Fermaglio', 'Spilla'], ['Parrucca', 'Extension'],
   ['Valvola', 'Rubinetto'], ['Sifone', 'Scarico'], ['Guarnizione', 'O-ring'], ['Tubo', 'Flessibile'],
 
-  // NATURA E ANIMALI (451-700)
+  // NATURA E ANIMALI (Esistenti)
   ['Gatto', 'Cane'], ['Leone', 'Tigre'], ['Lupo', 'Volpe'], ['Elefante', 'Ippopotamo'],
   ['Delfino', 'Balena'], ['Squalo', 'Orca'], ['Aquila', 'Falco'], ['Pappagallo', 'Canarino'],
   ['Serpente', 'Lucertola'], ['Rana', 'Rospo'], ['Ape', 'Vespa'], ['Farfalla', 'Falena'],
@@ -127,7 +128,7 @@ const wordPairs = [
   ['Gelsomino', 'Gardenia'], ['Garofano', 'Peonia'], ['Papavero', 'Anemone'], ['Iris', 'Violetta'],
   ['Ortensia', 'Camelia'], ['Azalea', 'Rododendro'], ['Ginestra', 'Mimosa'], ['Oleandro', 'Alloro'],
 
-  // VIAGGI E LUOGHI (701-850)
+  // VIAGGI E LUOGHI (Esistenti)
   ['Roma', 'Parigi'], ['Londra', 'Berlino'], ['New York', 'Los Angeles'], ['Italia', 'Spagna'],
   ['Scuola', 'Liceo'], ['Ufficio', 'Studio'], ['Ospedale', 'Clinica'], ['Farmacia', 'Erboristeria'],
   ['Negozio', 'Boutique'], ['Supermercato', 'Mercato'], ['Bar', 'Caffetteria'], ['Ristorante', 'Trattoria'],
@@ -137,7 +138,7 @@ const wordPairs = [
   ['Bicicletta', 'Tandem'], ['Nave', 'Yacht'], ['Traghetto', 'Motonave'], ['Piazza', 'Corso'],
   ['Via', 'Vicolo'], ['Parco', 'Villa'], ['Giardino', 'Orto'], ['Museo', 'Pinacoteca'],
   ['Galleria', 'Esposizione'], ['Chiesa', 'Basilica'], ['Cattedrale', 'Duomo'], ['Stadio', 'Arena'],
-  ['Palestra', 'Centro Sportivo'], ['Castello', 'Fortezza'], ['Torre', 'Campanile'], ['Faro', 'Lanterna'],
+  ['Palestra', 'Centro Sportivo'], ['Castello', 'Fortezza'], ['Torre', 'Campanile'], ['Fara', 'Lanterna'],
   ['Ponte', 'Viadotto'], ['Galleria', 'Tunnel'], ['Porto', 'Molo'], ['Venezia', 'Amsterdam'],
   ['Napoli', 'Marsiglia'], ['Madrid', 'Lisbona'], ['Stati Uniti', 'Canada'], ['Cina', 'Giappone'],
   ['Brasile', 'Messico'], ['Australia', 'Sudafrica'], ['Egitto', 'Grecia'], ['Svizzera', 'Austria'],
@@ -160,7 +161,7 @@ const wordPairs = [
   ['Casinò', 'Bingo'], ['Bowling', 'Sala Giochi'], ['Kartodromo', 'Autodromo'], ['Maneggio', 'Ippodromo'],
   ['Palazzetto', 'Velodromo'], ['Pista di ghiaccio', 'Skate park'], ['Muro di arrampicata', 'Boulder'], ['Parco Avventura', 'Zipline'],
 
-  // ABBIGLIAMENTO, SPORT E VARIE (851-1000)
+  // ABBIGLIAMENTO, SPORT E VARIE (Esistenti)
   ['Maglietta', 'Polo'], ['Camicia', 'Blusa'], ['Pantaloni', 'Jeans'], ['Gonna', 'Tubino'],
   ['Vestito', 'Tuta'], ['Giacca', 'Blazer'], ['Cappotto', 'Piumino'], ['Scarpe', 'Sneakers'],
   ['Stivali', 'Anfibi'], ['Sandali', 'Zoccoli'], ['Infradito', 'Ciabatte'], ['Calze', 'Gambaletti'],
@@ -173,11 +174,11 @@ const wordPairs = [
   ['Dadi', 'fiches'], ['Yoga', 'Pilates'], ['Rugby', 'Football'], ['Baseball', 'Softball'],
   ['Scherma', 'Fioretto'], ['Vela', 'Surf'], ['Biliardo', 'Bowling'], ['Ping Pong', 'Badminton'],
   ['Pesca', 'Sub'], ['Freccette', 'Tiro a segno'], ['Monopoli', 'Taboo'], ['Lego', 'Costruzioni'],
-  ['Medicina', 'Sciroppo'], ['Vitamina', 'Pillola'], ['Febbre', 'Influenza'], ['Raffreddore', 'Allergia'],
+  ['Medicina', 'Sciroppo'], ['Vitamina', 'Pillola'], ['Febbre', 'Influenza'], ['Raffindigodore', 'Allergia'],
   ['Cerotto', 'Gaza'], ['Termometro', 'Sonda'], ['Cuore', 'Polso'], ['Cervello', 'Mente'],
   ['Dente', 'Molare'], ['Naso', 'Narice'], ['Occhio', 'Pupilla'], ['Sogno', 'Desiderio'],
   ['Incubo', 'Paura'], ['Amore', 'Passione'], ['Amicizia', 'Lealtà'], ['Caldo', 'Afa'],
-  ['Freddo', 'Gelo'], ['Estate', 'Vacanze'], ['Inverno', 'Natale'], ['Musica', 'Canzone'],
+  ['Findigodo', 'Gelo'], ['Estate', 'Vacanze'], ['Inverno', 'Natale'], ['Musica', 'Canzone'],
   ['Profumo', 'Essenza'], ['Luce', 'Bagliore'], ['Colore', 'Tonalità'], ['Matematica', 'Algebra'],
   ['Storia', 'Leggenda'], ['Veloce', 'Rapido'], ['Lento', 'Pigro'], ['Bello', 'Elegante'],
   ['Nuovo', 'Moderno'], ['Pieno', 'Colmo'], ['Dolce', 'Zuccherato'], ['Morbido', 'Soffice'],
@@ -201,7 +202,46 @@ const wordPairs = [
   ['Fatica', 'Stanchezza'], ['Energia', 'Vigore'], ['Sonno', 'Riposo'], ['Veglia', 'Insonnia'],
   ['Fame', 'Appetito'], ['Sete', 'Aridità'], ['Salute', 'Benessere'], ['Forma', 'Profilo'],
   ['Peso', 'Massa'], ['Altezza', 'Statura'], ['Forza', 'Potenza'], ['Velocità', 'Rapidità'],
-  ['Riflessi', 'Istinto'], ['Talento', 'Genio'], ['Abilità', 'Maestria'], ['Impegno', 'Sforzo']
+  ['Riflessi', 'Istinto'], ['Talento', 'Genio'], ['Abilità', 'Maestria'], ['Impegno', 'Sforzo'],
+
+  // --- NUOVE CATEGORIE AGGIUNTE ---
+  
+  // TECNOLOGIA ED ELETTRONICA
+  ['Smartphone', 'Tablet'], ['Computer', 'Portatile'], ['Mouse', 'Tastiera'], ['Monitor', 'Televisore'],
+  ['Auricolari', 'Cuffie'], ['Smartwatch', 'Contapassi'], ['Router', 'Modem'], ['Chiavetta USB', 'Hard Disk'],
+  ['Stampante', 'Scanner'], ['Console', 'PC Gaming'], ['Wi-Fi', 'Bluetooth'], ['App', 'Sito Web'],
+  ['Social Network', 'Forum'], ['Videogioco', 'Film Interattivo'], ['Drone', 'Elicottero Radiocomandato'],
+  ['Cavo HDMI', 'Cavo USB'], ['Password', 'PIN'], ['Antivirus', 'Firewall'], ['Intelligenza Artificiale', 'Algoritmo'],
+
+  // MESTIERI E PROFESSIONI
+  ['Medico', 'Infermiere'], ['Avvocato', 'Giudice'], ['Poliziotto', 'Carabiniere'], ['Insegnante', 'Professore'],
+  ['Cuoco', 'Pasticciere'], ['Muratore', 'Falegname'], ['Idraulico', 'Elettricista'], ['Attore', 'Regista'],
+  ['Cantante', 'Musicista'], ['Giornalista', 'Scrittore'], ['Architetto', 'Ingegnere'], ['Barista', 'Cameriere'],
+  ['Sartoria', 'Stilista'], ['Pilota', 'Hostess'], ['Autista', 'Tassista'], ['Dentista', 'Igienista'],
+  ['Psicologo', 'Psichiatra'], ['Farmacista', 'Erborista'], ['Fotografo', 'Cameraman'], ['Sindaco', 'Presidente'],
+
+  // ARTE E INTRATTENIMENTO
+  ['Pittura', 'Scultura'], ['Fumetto', 'Manga'], ['Romanzo', 'Poesia'], ['Commedia', 'Tragedia'],
+  ['Film', 'Serie TV'], ['Documentario', 'Reportage'], ['Fotografia', 'Ritratto'], ['Chitarra', 'Basso'],
+  ['Pianoforte', 'Tastiera (musicale)'], ['Batteria', 'Percussioni'], ['Flauto', 'Clarinetto'], ['Violino', 'Violoncello'],
+  ['Teatro', 'Cinema'], ['Concerto', 'Festival'], ['Museo', 'Mostra'], ['Acrobata', 'Giocoliere'],
+  ['Magia', 'Illusionismo'], ['Anime', 'Cartone Animato'], ['Podcast', 'Programma Radio'], ['DJ', 'Vocalist'],
+
+  // CIBI INTERNAZIONALI E STREET FOOD
+  ['Tacos', 'Burrito'], ['Nachos', 'Tortillas'], ['Guacamole', 'Hummus'], ['Kebab', 'Gyros'],
+  ['Gyoza', 'Ravioli cinesi'], ['Ramen', 'Noodles'], ['Tempura', 'Fritto Misto'], ['Falafel', 'Polpette'],
+  ['Pancake', 'Waffle'], ['Brownie', 'Muffin'], ['Cheeseburger', 'Hamburger'], ['Hot Dog', 'Corn Dog'],
+
+  // CONCETTI ASTRATTI
+  ['Speranza', 'Illusione'], ['Paura', 'Terrore'], ['Gioia', 'Felicità'], ['Tristezza', 'Malinconia'],
+  ['Rabbia', 'Frustrazione'], ['Coraggio', 'Temerarietà'], ['Intelligenza', 'Saggezza'], ['Bellezza', 'Fascino'],
+  ['Ricchezza', 'Lusso'], ['Povertà', 'Miseria'], ['Destino', 'Fato'], ['Fortuna', 'Caso'],
+  ['Sogno', 'Obiettivo'], ['Ricordo', 'Nostalgia'], ['Amore', 'Infatuazione'], ['Simpatia', 'Empatia'],
+  
+  // SPAZIO E SCIENZA
+  ['Astronauta', 'Cosmonauta'], ['Galassia', 'Nebulosa'], ['Pianeta', 'Asteroide'], ['Sole', 'Stella nana'],
+  ['Microscopio', 'Telescopio'], ['Atomo', 'Molecola'], ['Laboratorio', 'Osservatorio'], ['Razzo', 'Navetta'],
+  ['Gravità', 'Magnetismo'], ['Elettricità', 'Energia Solare']
 ];
 
 // --- FUNZIONI DI UTILITA' ---
@@ -351,10 +391,10 @@ const startGame = () => {
     const shuffledAlive = shuffleArray(alive);
     
     // Ricomponi: prima i vivi mescolati, poi i morti
-    const reorderedPlayers = [...shuffledAlive, ...dead];
+    const reordeindigoPlayers = [...shuffledAlive, ...dead];
     
-    setPlayers(reorderedPlayers);
-    const eliminatedPlayer = reorderedPlayers.find(p => p.id === id);
+    setPlayers(reordeindigoPlayers);
+    const eliminatedPlayer = reordeindigoPlayers.find(p => p.id === id);
     setEliminatedJustNow(eliminatedPlayer);
     };
 
@@ -447,7 +487,7 @@ const startGame = () => {
     <div className="flex flex-col gap-8 w-full p-8 sm:p-12 animate-fadeIn flex-1">
       <div className="text-center space-y-3 mb-6">
         <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-slate-800">UNDERCOVER</h1>
-        <p className="text-slate-500 font-medium sm:text-xl">Trova l'impostore tra di voi!</p>
+        <p className="text-slate-500 font-medium sm:text-xl">Trova l'impostore tra di voi! (FORZA PISELLINO!)</p>
       </div>
 
       <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
@@ -473,7 +513,7 @@ const startGame = () => {
           {playersInput.map((p, i) => (
             <div key={i} className="flex items-center gap-3 bg-slate-100 px-5 py-3 rounded-xl text-base sm:text-lg font-medium text-slate-700">
               {p}
-              <button onClick={() => removePlayer(i)} className="text-slate-400 hover:text-red-500 transition-colors ml-2">
+              <button onClick={() => removePlayer(i)} className="text-slate-400 hover:text-indigo-500 transition-colors ml-2">
                 <Trash2 size={20} />
               </button>
             </div>
