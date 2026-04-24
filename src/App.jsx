@@ -487,7 +487,7 @@ const startGame = () => {
     <div className="flex flex-col gap-8 w-full p-8 sm:p-12 animate-fadeIn flex-1">
       <div className="text-center space-y-3 mb-6">
         <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-slate-800">UNDERCOVER</h1>
-        <p className="text-slate-500 font-medium sm:text-xl">Trova l'impostore tra di voi! (FORZA PISELLINO!)</p>
+        <p className="text-slate-500 font-medium sm:text-xl">Trova l'impostore tra di voi!</p>
       </div>
 
       <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
@@ -829,6 +829,9 @@ const startGame = () => {
           {gameState === 'distribution' && renderDistribution()}
           {gameState === 'playing' && renderPlaying()}
           {gameState === 'gameover' && renderGameOver()}
+        </div>
+        <div className="mt-8 mb-4 text-slate-500 font-bold text-lg animate-fadeIn">
+          Made by <span className="text-red-600">Pisellino</span> with Love ❤️
         </div>
       </div>
     </div>
