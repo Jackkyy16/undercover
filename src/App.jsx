@@ -809,9 +809,12 @@ const startGame = () => {
 
 
   return (
-    // Il contenitore root ora è "fixed inset-0" per coprire tutto lo schermo ed eliminare lo sfondo nero di default
-    <div className="fixed inset-0 w-full h-full overflow-y-auto bg-[#e2e8f0] font-sans text-slate-900 selection:bg-indigo-100">
-      <div className="min-h-full flex items-center justify-center sm:p-8">
+    // Sfondo principale che copre tutto e permette lo scroll
+    <div className="fixed inset-0 w-full h-full overflow-y-auto bg-[#e2e8f0] font-sans text-slate-900 selection:bg-red-100">
+      
+      {/* Wrapper che centra gli elementi e li mette in colonna (flex-col) */}
+      <div className="min-h-screen w-full flex flex-col items-center py-10 px-4 sm:px-8">
+        
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
           @keyframes bounceIn { 
@@ -823,16 +826,19 @@ const startGame = () => {
           .animate-bounce-in { animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         `}} />
         
-        {/* Contenitore Principale (Ora impostato a max-w-4xl, molto più largo) */}
-        <div className="w-full max-w-4xl bg-slate-50 sm:bg-white sm:shadow-2xl sm:rounded-[3rem] sm:border border-slate-200 flex flex-col relative mx-auto sm:min-h-[85vh]">
+        {/* CONTENITORE GIOCO */}
+        <div className="w-full max-w-4xl bg-white shadow-2xl rounded-[3rem] border border-slate-200 flex flex-col relative">
           {gameState === 'setup' && renderSetup()}
           {gameState === 'distribution' && renderDistribution()}
           {gameState === 'playing' && renderPlaying()}
           {gameState === 'gameover' && renderGameOver()}
         </div>
-        <div className="mt-8 mb-4 text-slate-500 font-bold text-lg animate-fadeIn">
+
+        {/* FOOTER - Ora forzatamente sotto grazie a flex-col e mt-auto o mt-8 */}
+        <div className="mt-10 mb-6 text-slate-500 font-bold text-lg animate-fadeIn text-center">
           Made by <span className="text-red-600">Pisellino</span> with Love ❤️
         </div>
+
       </div>
     </div>
   );
