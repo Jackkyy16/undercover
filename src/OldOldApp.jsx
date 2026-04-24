@@ -237,7 +237,6 @@ export default function App() {
   // Game progress state
   const [winner, setWinner] = useState(null); // 'civili', 'undercover', 'mrWhite'
   const [eliminatedJustNow, setEliminatedJustNow] = useState(null);
-  const [mrWhiteGuess, setMrWhiteGuess] = useState('');
 
   // --- LOGICA DI SETUP ---
   const addPlayer = (e) => {
@@ -266,7 +265,7 @@ export default function App() {
   const totalRoles = rolesCount.civili + rolesCount.undercover + rolesCount.mrWhite;
   const isSetupValid = totalRoles === playersInput.length && rolesCount.civili > 0 && playersInput.length >= 3;
 
-const startGame = () => {
+  const startGame = () => {
     if (!isSetupValid) return;
 
     const randomPair = wordPairs[Math.floor(Math.random() * wordPairs.length)];
@@ -283,22 +282,6 @@ const startGame = () => {
     for (let i = 0; i < rolesCount.mrWhite; i++) rolesArray.push('Mr. White');
     
     rolesArray = shuffleArray(rolesArray);
-
-    // --- NUOVA LOGICA: MR. WHITE AL PRIMO POSTO AL 10% ---
-    if (rolesArray[0] === 'Mr. White') {
-      // Math.random() genera un numero tra 0 e 1.
-      // Se è maggiore di 0.10 (cioè il 90% delle volte), spostiamo Mr. White.
-      if (Math.random() > 0.10) {
-        // Cerchiamo il primo ruolo nella lista che NON è Mr. White
-        const swapIndex = rolesArray.findIndex(role => role !== 'Mr. White');
-        if (swapIndex !== -1) {
-          // Scambiamo i ruoli: Mr. White va in mezzo, l'altro va al primo posto
-          rolesArray[0] = rolesArray[swapIndex];
-          rolesArray[swapIndex] = 'Mr. White';
-        }
-      }
-    }
-    // ---------------------------------------------------
 
     const shuffledPlayersInput = shuffleArray(playersInput);
 
@@ -378,23 +361,6 @@ const startGame = () => {
     });
   };
 
-// NUOVO: Controlla se la parola inserita da Mr. White è corretta
-  const handleMrWhiteGuessSubmit = (e) => {
-    e.preventDefault();
-    if (!mrWhiteGuess.trim()) return;
-
-    // Rende il controllo case-insensitive e toglie spazi extra
-    const guess = mrWhiteGuess.trim().toLowerCase();
-    const target = civilianWord.trim().toLowerCase();
-
-    if (guess === target) {
-      mrWhiteGuessedWord(); // Ha indovinato!
-    } else {
-      dismissEliminationMessage(); // Ha sbagliato, il gioco procede e lui è eliminato
-    }
-    setMrWhiteGuess(''); // Resetta il campo
-  };
-
 
   const checkWinConditions = () => {
     const alivePlayers = players.filter(p => p.isAlive);
@@ -439,7 +405,6 @@ const startGame = () => {
     setGameState('setup');
     setWinner(null);
     setEliminatedJustNow(null);
-    setMrWhiteGuess('');
   };
 
   // --- RENDERS ---
@@ -606,35 +571,13 @@ const startGame = () => {
             </div>
 
             {eliminatedJustNow.role === 'Mr. White' ? (
-              <form onSubmit={handleMrWhiteGuessSubmit} className="space-y-6 pt-4">
-                <p className="text-lg font-bold text-amber-600">
-                  Mr. White, hai un'ultima possibilità! Scrivi la parola dei Civili per vincere.
-                </p>
-                <input
-                  type="text"
-                  value={mrWhiteGuess}
-                  onChange={(e) => setMrWhiteGuess(e.target.value)}
-                  placeholder="Inserisci la parola segreta..."
-                  className="w-full px-5 py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all text-xl text-center font-bold text-slate-700"
-                  autoFocus
-                />
+              <div className="space-y-6 pt-4">
+                <p className="text-lg font-bold text-amber-600">Mr. White, hai un'ultima possibilità! Indovina la parola dei Civili per vincere.</p>
                 <div className="flex gap-4">
-                  <button 
-                    type="submit" 
-                    disabled={!mrWhiteGuess.trim()}
-                    className="flex-1 bg-amber-500 disabled:bg-amber-300 disabled:cursor-not-allowed text-white py-5 rounded-2xl font-bold text-xl hover:bg-amber-600 transition-colors"
-                  >
-                    Conferma
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => { setMrWhiteGuess(''); dismissEliminationMessage(); }} 
-                    className="flex-1 bg-slate-200 text-slate-700 py-5 rounded-2xl font-bold text-xl hover:bg-slate-300 transition-colors"
-                  >
-                    Non lo so
-                  </button>
+                  <button onClick={mrWhiteGuessedWord} className="flex-1 bg-amber-500 text-white py-5 rounded-2xl font-bold text-xl hover:bg-amber-600 transition-colors">Indovinato!</button>
+                  <button onClick={dismissEliminationMessage} className="flex-1 bg-slate-200 text-slate-700 py-5 rounded-2xl font-bold text-xl hover:bg-slate-300 transition-colors">Sbagliato</button>
                 </div>
-              </form>
+              </div>
             ) : (
               <button 
                 onClick={dismissEliminationMessage}

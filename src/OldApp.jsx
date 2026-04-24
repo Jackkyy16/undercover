@@ -266,7 +266,7 @@ export default function App() {
   const totalRoles = rolesCount.civili + rolesCount.undercover + rolesCount.mrWhite;
   const isSetupValid = totalRoles === playersInput.length && rolesCount.civili > 0 && playersInput.length >= 3;
 
-const startGame = () => {
+  const startGame = () => {
     if (!isSetupValid) return;
 
     const randomPair = wordPairs[Math.floor(Math.random() * wordPairs.length)];
@@ -283,22 +283,6 @@ const startGame = () => {
     for (let i = 0; i < rolesCount.mrWhite; i++) rolesArray.push('Mr. White');
     
     rolesArray = shuffleArray(rolesArray);
-
-    // --- NUOVA LOGICA: MR. WHITE AL PRIMO POSTO AL 10% ---
-    if (rolesArray[0] === 'Mr. White') {
-      // Math.random() genera un numero tra 0 e 1.
-      // Se è maggiore di 0.10 (cioè il 90% delle volte), spostiamo Mr. White.
-      if (Math.random() > 0.10) {
-        // Cerchiamo il primo ruolo nella lista che NON è Mr. White
-        const swapIndex = rolesArray.findIndex(role => role !== 'Mr. White');
-        if (swapIndex !== -1) {
-          // Scambiamo i ruoli: Mr. White va in mezzo, l'altro va al primo posto
-          rolesArray[0] = rolesArray[swapIndex];
-          rolesArray[swapIndex] = 'Mr. White';
-        }
-      }
-    }
-    // ---------------------------------------------------
 
     const shuffledPlayersInput = shuffleArray(playersInput);
 
