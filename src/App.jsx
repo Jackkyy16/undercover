@@ -3,7 +3,7 @@ import './index.css'
 import React, { useState, useEffect } from 'react';
 import { Users, UserPlus, Trash2, Eye, EyeOff, Play, Skull, Crown, AlertCircle, RefreshCw, ChevronRight } from 'lucide-react';
 
-
+import logoImage from '/matteo.png';
 
 // --- DIZIONARIO PAROLE ---
 // --- DIZIONARIO PAROLE AGGIORNATO ---
@@ -261,9 +261,9 @@ export default function App() {
   const [gameState, setGameState] = useState('setup');
   
   // Setup state
-  const [playersInput, setPlayersInput] = useState(['Alice', 'Bob', 'Charlie', 'Diana', 'Edoardo']);
+  const [playersInput, setPlayersInput] = useState([]);
   const [newPlayerName, setNewPlayerName] = useState('');
-  const [rolesCount, setRolesCount] = useState({ civili: 3, undercover: 1, mrWhite: 1 });
+  const [rolesCount, setRolesCount] = useState({ civili: 0, undercover: 0, mrWhite: 0 });
   
   // Game state
   const [players, setPlayers] = useState([]);
@@ -489,7 +489,14 @@ const startGame = () => {
         <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-slate-800">UNDERCOVER</h1>
         <p className="text-slate-500 font-medium sm:text-xl">Trova l'impostore tra di voi!</p>
       </div>
-
+      <div className="text-center space-y-3 mb-6">
+        {/* Immagine dalla cartella public */}
+        <img
+          src={logoImage}
+          alt="Logo Undercover"
+          className="mx-auto w-80 object-contain mb-4"
+        />
+      </div>
       <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
         <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-slate-700">
           <Users size={28} className="text-indigo-500"/> 
