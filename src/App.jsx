@@ -789,7 +789,7 @@ const startGame = () => {
         </div>
         {/* --- FINE NUOVO CODICE CLASSIFICA --- */}
 
-        <div className="bg-white rounded-[3rem] shadow-sm border border-slate-200 p-10 space-y-8">
+        {/*<div className="bg-white rounded-[3rem] shadow-sm border border-slate-200 p-10 space-y-8">
           <h3 className="text-3xl font-bold text-slate-800">Riepilogo Parole</h3>
           <div className="grid grid-cols-2 gap-6 sm:gap-8">
             <div className="bg-emerald-50 p-8 rounded-[2rem] border border-emerald-100">
@@ -798,6 +798,19 @@ const startGame = () => {
             </div>
             <div className="bg-rose-50 p-8 rounded-[2rem] border border-rose-100">
               <div className="text-base font-bold text-rose-600 uppercase mb-3">Undercover</div>
+              <div className="text-3xl sm:text-4xl font-black text-rose-800 break-words">{undercoverWord}</div>
+            </div>
+          </div>
+        </div>*/}
+        <div className="bg-white rounded-[2rem] sm:rounded-[3rem] shadow-sm border border-slate-200 p-6 sm:p-10 space-y-6 sm:space-y-8">
+          <h3 className="text-2xl sm:text-3xl font-bold text-slate-800">Riepilogo Parole</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
+            <div className="bg-emerald-50 p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-emerald-100">
+              <div className="text-sm sm:text-base font-bold text-emerald-600 uppercase mb-2 sm:mb-3">Civili</div>
+              <div className="text-3xl sm:text-4xl font-black text-emerald-800 break-words">{civilianWord}</div>
+            </div>
+            <div className="bg-rose-50 p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-rose-100">
+              <div className="text-sm sm:text-base font-bold text-rose-600 uppercase mb-2 sm:mb-3">Undercover</div>
               <div className="text-3xl sm:text-4xl font-black text-rose-800 break-words">{undercoverWord}</div>
             </div>
           </div>
