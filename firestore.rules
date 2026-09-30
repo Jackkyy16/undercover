@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// Regole di sicurezza del database Undercover.
+// Da incollare in Firebase Console → Firestore Database → Regole → Pubblica.
+//
+// - Solo chi usa l'app (accesso anonimo) può leggere o scrivere.
+// - Si accede a un gruppo solo conoscendone il codice: l'elenco dei gruppi non è leggibile.
+// - Si possono scrivere solo i campi previsti dal gioco.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function validCode(code) {
+      return code.size() >= 4 && code.size() <= 40 && code.matches('^[a-z0-9-]+$');
+    }
+
+    match /groups/{code} {
+      allow get: if signedIn() && validCode(code);
+      allow list, delete: if false;
+      allow create, update: if signedIn() && validCode(code)
+        && request.resource.data.keys().hasOnly(['scores', 'stats', 'avatars', 'updatedAt'])
+        && request.resource.data.get('scores', {}) is map
+        && request.resource.data.get('stats', {}) is map
+        && request.resource.data.get('avatars', {}) is map;
+
+      match /games/{gameId} {
+        allow get, list: if signedIn() && validCode(code);
+        allow create: if signedIn() && validCode(code)
+          && request.resource.data.keys().hasOnly(['date', 'winner', 'civilianWord', 'undercoverWord', 'category', 'mrWhiteGuessed', 'players'])
+          && request.resource.data.date is int
+          && request.resource.data.winner in ['civili', 'undercover', 'mrWhite']
+          && request.resource.data.players is list
+          && request.resource.data.players.size() <= 50;
+        // Solo per "Azzera statistiche"
+        allow delete: if signedIn() && validCode(code);
+        allow update: if false;
+      }
+    }
+
+    // Tutto il resto è chiuso
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,370 +1,23 @@
 
 import './index.css'
 import React, { useState, useEffect } from 'react';
-import { Users, UserPlus, Trash2, Eye, EyeOff, Play, Skull, Crown, AlertCircle, RefreshCw, Shield, VenetianMask, Ghost, Fingerprint, Sparkles, Trophy, Minus, Plus, HatGlasses, Vote } from 'lucide-react';
+import { Users, UserPlus, Trash2, Eye, EyeOff, Play, Skull, Crown, AlertCircle, RefreshCw, Shield, VenetianMask, Ghost, Fingerprint, Sparkles, Trophy, Minus, Plus, HatGlasses, Vote, ChartBar, Volume2, VolumeX, WandSparkles, Layers, Cloud, CloudOff, Pencil } from 'lucide-react';
 
 import logoImage from '/matteo.png';
+import { wordCategories } from './words';
+import { shuffleArray, isOwner, roleStyles, prefersReducedMotion, buzz } from './lib';
+import { AvatarContext } from './avatarData';
+import { PlayerAvatar, AvatarPicker } from './avatars';
+import { Confetti, ScrambleText, CountUp, Tilt, Typewriter, Fireworks, OwnerParty, DeathBurst } from './effects';
+import { sounds, setMuted as setSoundMuted } from './sounds';
+import { loadSave, writeSave } from './storage';
+import { useGroupStats, recordGameOnline, resetGroupOnline, setAvatarOnline, normalizeGroupCode, isValidGroupCode } from './cloudStats';
+import SpeakingOrder from './components/SpeakingOrder';
+import DiscussionTimer from './components/DiscussionTimer';
+import SecretVote from './components/SecretVote';
+import StatsView from './components/StatsView';
+import RoleReveal from './components/RoleReveal';
 
-// --- DIZIONARIO PAROLE ---
-// --- DIZIONARIO PAROLE AGGIORNATO ---
-const wordPairs = [
-  // CIBO E BEVANDE (Esistenti)
-  ['Pizza', 'Pasta'], ['Hamburger', 'Hotdog'], ['Gelato', 'Sorbetto'], ['Vino', 'Birra'],
-  ['Zucchero', 'Sale'], ['Burro', 'Margarina'], ['Caffè', 'Tè'], ['Arancia', 'Mandarino'],
-  ['Mela', 'Pera'], ['Biscotto', 'Pasticcino'], ['Pane', 'Focaccia'], ['Sushi', 'Sashimi'],
-  ['Ketchup', 'Maionese'], ['Coca Cola', 'Pepsi'], ['Latte', 'Panna'], ['Riso', 'Farro'],
-  ['Prosciutto', 'Salame'], ['Parmigiano', 'Pecorino'], ['Pesca', 'Albicocca'], ['Anguria', 'Melone'],
-  ['Patatine', 'Popcorn'], ['Torta', 'Crostata'], ['Nutella', 'Marmellata'], ['Acqua', 'Seltz'],
-  ['Pollo', 'Tacchino'], ['Salmone', 'Tonno'], ['Lasagna', 'Cannelloni'], ['Miele', 'Sciroppo'],
-  ['Limone', 'Lime'], ['Cipolla', 'Aglio'], ['Fragola', 'Lampone'], ['Ciliegia', 'Amarena'],
-  ['Speck', 'Pancetta'], ['Uovo', 'Omelette'], ['Yogurt', 'Kefir'], ['Noci', 'Nocciole'],
-  ['Mandorle', 'Pistacchi'], ['Cioccolato', 'Cacao'], ['Vaniglia', 'Cannella'], ['Zenzero', 'Curcuma'],
-  ['Pepe', 'Peperoncino'], ['Origano', 'Basilico'], ['Prezzemolo', 'Sedano'], ['Carota', 'Zucca'],
-  ['Melanzana', 'Zucchina'], ['Patata', 'Topinambur'], ['Broccolo', 'Cavolfiore'], ['Spinaci', 'Bietola'],
-  ['Fagioli', 'Lenticchie'], ['Ceci', 'Piselli'], ['Mais', 'Orzo'], ['Olio', 'Aceto'],
-  ['Senape', 'Salsa BBQ'], ['Cocktail', 'Mocktail'], ['Spumante', 'Champagne'], ['Grappa', 'Whisky'],
-  ['Vodka', 'Gin'], ['Liquore', 'Amaro'], ['Panino', 'Tramezzino'], ['Piadina', 'Kebab'],
-  ['Muffin', 'Cupcake'], ['Cheesecake', 'Tiramisù'], ['Crepe', 'Waffle'], ['Couscous', 'Quinoa'],
-  ['Tofu', 'Seitan'], ['Sogliola', 'Orata'], ['Gambero', 'Aragosta'], ['Cozze', 'Vongole'],
-  ['Polpo', 'Seppia'], ['Tartufo', 'Fungo'], ['Pistacchio', 'Anacardo'], ['Ravioli', 'Tortellini'],
-  ['Meringa', 'Panna Montata'], ['Polpetta', 'Salsiccia'], ['Acqua Naturale', 'Acqua Frizzante'],
-  ['Bresaola', 'Crudo'], ['Gorgonzola', 'Roquefort'], ['Radicchio', 'Insalata'], ['Finocchio', 'Sedano'],
-  ['Carciofo', 'Cardo'], ['Porro', 'Scalogno'], ['Melograno', 'Ribes'], ['Mora', 'Mirtillo'],
-  ['Fico', 'Dattero'], ['Prugna', 'Susina'], ['Ananas', 'Mango'], ['Papaya', 'Avocado'],
-  ['Lupini', 'Fave'], ['Cecina', 'Farinata'], ['Brioche', 'Cornetto'], ['Babà', 'Sfogliatella'],
-  ['Zabaione', 'Crema Pasticcera'], ['Sugo', 'Ragù'], ['Pesto', 'Salsa di Noci'],
-  ['Tagliatelle', 'Fettuccine'], ['Gnocchi', 'Tortelli'], ['Focaccia', 'Pizza Bianca'], ['Toast', 'Sandwich'],
-  ['Carpaccio', 'Bresaola'], ['Salame', 'Salamella'], ['Wurstel', 'Salsiccia'], ['Faraona', 'Anatra'],
-  ['Trota', 'Branzino'], ['Totano', 'Calamaro'], ['Telline', 'Lupini'], ['Mazzancolla', 'Scampo'],
-  ['Uovo Sodo', 'Uovo alla Coque'], ['Frittata', 'Tortilla'], ['Crema Catalana', 'Creme Brulée'], ['Budino', 'Mousse'],
-  ['Macaron', 'Amaretto'], ['Ciambella', 'Krapfen'], ['Bombolone', 'Pancake'], ['Cannolo', 'Sfogliatella'],
-  ['Panettone', 'Pandoro'], ['Colomba', 'Uovo di Pasqua'], ['Castagna', 'Marrone'], ['Pinolo', 'Seme di Girasole'],
-  ['Arachide', 'Nocciolina'], ['Confettura', 'Miele'], ['Zucchero a velo', 'Zucchero di canna'], ['Sciroppo d\'acero', 'Agave'],
-  ['Salsa Tartara', 'Salsa Rosa'], ['Salsa Verde', 'Chimichurri'], ['Olio d\'oliva', 'Olio di girasole'], ['Aceto di mele', 'Aceto balsamico'],
-  ['Lenticchie', 'Fagioli'], ['Asparago', 'Luppolo'], ['Verza', 'Cavolo'], ['Rucola', 'Valeriana'],
-  ['Porcino', 'Finferlo'], ['Champignon', 'Prataiolo'], ['Pompelmo', 'Pomelo'], ['Cedro', 'Bergamotto'],
-  ['Clementine', 'Mandarini'], ['Fico d\'India', 'Dragon Fruit'], ['Litchi', 'Rambutan'], ['Passito', 'Moscato'],
-  ['Sidro', 'Succo di Mela'], ['Granita', 'Sorbetto'], ['Frappé', 'Frullato'], ['Centrifuga', 'Estratto'],
-  ['Latte di Mandorla', 'Latte di Soia'], ['Kefir', 'Yogurt Greco'], ['Gorgonzola', 'Taleggio'], ['Fontina', 'Asiago'],
-  ['Provola', 'Scamorza'], ['Mozzarella', 'Burrata'], ['Stracciatella', 'Ricotta'], ['Mascarpone', 'Panna'],
-  ['Speck', 'Lonza'], ['Mortadella', 'Bologna'], ['Zampone', 'Cotechino'], ['Spezzatino', 'Gulasch'],
-  ['Arrosto', 'Brasato'], ['Vitello Tonnato', 'Carpaccio'], ['Insalata Russa', 'Insalata di patate'], ['Baccalà', 'Stoccafisso'],
-  ['Cacciucco', 'Zuppa di Pesce'], ['Paella', 'Risotto alla pescatora'], ['Zafferano', 'Curcuma'], ['Curry', 'Paprika'],
-  ['Noce Moscata', 'Chiodi di Garofano'], ['Anice Stellato', 'Cumino'], ['Rosmarino', 'Salvia'], ['Timo', 'Maggiorana'],
-  ['Menta', 'Eucalipto'], ['Camomilla', 'Tisana'], ['Decotto', 'Infuso'], ['Nocino', 'Limoncello'],
-  ['Sambuca', 'Anisetta'], ['Vermouth', 'Martini'], ['Spritz', 'Negroni'], ['Mojito', 'Caipirinha'],
-
-  // OGGETTI E CASA (Esistenti)
-  ['Sedia', 'Poltrona'], ['Tavolo', 'Scrivania'], ['Letto', 'Divano'], ['Armadio', 'Cassettiera'],
-  ['Lampada', 'Lampadario'], ['Specchio', 'Quadro'], ['Tenda', 'Persiana'], ['Tappeto', 'Moquette'],
-  ['Orologio', 'Sveglia'], ['Vaso', 'Cestino'], ['Cuscino', 'Coperta'], ['Padella', 'Pentola'],
-  ['Piatto', 'Vassoio'], ['Bicchiere', 'Tazza'], ['Forchetta', 'Cucchiaio'], ['Coltello', 'Forbici'],
-  ['Frigorifero', 'Congelatore'], ['Forno', 'Microonde'], ['Lavatrice', 'Asciugatrice'], ['Zaino', 'Valigia'],
-  ['Portafoglio', 'Borsello'], ['Ombrello', 'Impermeabile'], ['Chiave', 'Lucchetto'], ['Candela', 'Torcia'],
-  ['Sapone', 'Shampoo'], ['Dentifricio', 'Collutorio'], ['Spazzolino', 'Pettine'], ['Asciugamano', 'Accappatoio'],
-  ['Quaderno', 'Diario'], ['Penna', 'Matita'], ['Gomma', 'Temperino'], ['Righello', 'Squadra'],
-  ['Bottiglia', 'Borraccia'], ['Tappo', 'Sughero'], ['Secchio', 'Mocio'], ['Scopa', 'Aspirapolvere'],
-  ['Ferro da stiro', 'Vaporella'], ['Molletta', 'Gruccia'], ['Calamita', 'Adesivo'], ['Cornice', 'Poster'],
-  ['Divano', 'Pouf'], ['Scaffale', 'Libreria'], ['Lampadina', 'Faretto'], ['Batteria', 'Pila'],
-  ['Telecomando', 'Gamepad'], ['Caricabatterie', 'Powerbank'], ['Portachiavi', 'Moschettone'], ['Accendino', 'Fiammiferi'],
-  ['Occhiali', 'Lenti a contatto'], ['Lente d\'ingrandimento', 'Microscopio'], ['Telescopio', 'Binocolo'],
-  ['Mappa', 'Bussola'], ['Globo', 'Atlante'], ['Ombrellone', 'Sdraio'], ['Amaca', 'Altalena'],
-  ['Ago', 'Spilla'], ['Filo', 'Lana'], ['Bottone', 'Cerniera'], ['Martello', 'Cacciavite'],
-  ['Vite', 'Bullone'], ['Chiodo', 'Tassello'], ['Pinza', 'Tenaglia'], ['Sega', 'Trapano'],
-  ['Scala', 'Sgabello'], ['Secchio', 'Annaffiatoio'], ['Pala', 'Piccone'], ['Rastrello', 'Vanga'],
-  ['Valigia', 'Trolley'], ['Borsone', 'Sacca'], ['Portadocumenti', 'Cartellina'], ['Evidenziatore', 'Pennarello'],
-  ['Scotch', 'Colla'], ['Cucitrice', 'Perforatrice'], ['Gaffeur', 'Nastro Isolante'], ['Pennello', 'Rullo'],
-  ['Spatola', 'Cazzuola'], ['Livella', 'Metro'], ['Zanzariera', 'Tenda'], ['Radiatore', 'Stufa'],
-  ['Ventilatore', 'Condizionatore'], ['Caldaia', 'Boiler'], ['Citofono', 'Campanello'], ['Cassaforte', 'Scrigno'],
-  ['Phon', 'Piastra'], ['Rasoio', 'Tagliacapelli'], ['Bilancia', 'Metro'], ['Aspirapolvere', 'Robot'],
-  ['Moka', 'Macchina espresso'], ['Tostapane', 'Piastra'], ['Frullatore', 'Mixer'], ['Spremiagrumi', 'Centrifuga'],
-  ['Grattugia', 'Mandolina'], ['Scolapasta', 'Colino'], ['Apribottiglie', 'Cavatappi'], ['Presina', 'Guanto da forno'],
-  ['Stoviglie', 'Posate'], ['Tovaglia', 'Runner'], ['Tovagliolo', 'Fazzoletto'], ['Cestino', 'Secchio'],
-  ['Divisorio', 'Paravento'], ['Comodino', 'Consolle'], ['Sgabello', 'Panca'], ['Appendiabiti', 'Stendiabiti'],
-  ['Zerbino', 'Tappetino'], ['Serratura', 'Lucchetto'], ['Pomello', 'Maniglia'], ['Cerniera', 'Cardine'],
-  ['Cavo', 'Filo'], ['Presa', 'Interruttore'], ['Multipresa', 'Adattatore'], ['Lampada da terra', 'Abat-jour'],
-  ['Culla', 'Lettino'], ['Box', 'Seggiolone'], ['Passeggino', 'Carrozzina'], ['Fasciatoio', 'Vaschetta'],
-  ['Attenti al cane', 'Campanello'], ['Buca delle lettere', 'Citofono'], ['Gancio', 'Ventosa'], ['Tassello', 'Vite'],
-  ['Carta igienica', 'Rotolone'], ['Spugna', 'Luffa'], ['Pumice', 'Lima'], ['Pennello trucco', 'Spugnetta'],
-  ['Ombretto', 'Fard'], ['Mascara', 'Eyeliner'], ['Rossetto', 'Lucidalabbra'], ['Fondotinta', 'Correttore'],
-  ['Crema viso', 'Siero'], ['Maschera', 'Fango'], ['Ceretta', 'Rasoio'], ['Pinzetta', 'Forbicina'],
-  ['Bigodino', 'Molletta'], ['Elastico', 'Cerchietto'], ['Fermaglio', 'Spilla'], ['Parrucca', 'Extension'],
-  ['Valvola', 'Rubinetto'], ['Sifone', 'Scarico'], ['Guarnizione', 'O-ring'], ['Tubo', 'Flessibile'],
-
-  // NATURA E ANIMALI (Esistenti)
-  ['Gatto', 'Cane'], ['Leone', 'Tigre'], ['Lupo', 'Volpe'], ['Elefante', 'Ippopotamo'],
-  ['Delfino', 'Balena'], ['Squalo', 'Orca'], ['Aquila', 'Falco'], ['Pappagallo', 'Canarino'],
-  ['Serpente', 'Lucertola'], ['Rana', 'Rospo'], ['Ape', 'Vespa'], ['Farfalla', 'Falena'],
-  ['Sole', 'Luna'], ['Stella', 'Pianeta'], ['Mare', 'Oceano'], ['Fiume', 'Torrente'],
-  ['Montagna', 'Collina'], ['Bosco', 'Foresta'], ['Prato', 'Giungla'], ['Deserto', 'Savana'],
-  ['Pioggia', 'Grandine'], ['Vento', 'Brezza'], ['Tuono', 'Fulmine'], ['Albero', 'Arbusto'],
-  ['Rosa', 'Tulipano'], ['Erba', 'Muschio'], ['Sabbia', 'Ghiaia'], ['Giraffa', 'Zebra'],
-  ['Gorilla', 'Scimpanzé'], ['Orso', 'Panda'], ['Canguro', 'Koala'], ['Cammello', 'Dromedario'],
-  ['Mucca', 'Toro'], ['Pecora', 'Capra'], ['Maiale', 'Cinghiale'], ['Coniglio', 'Lepre'],
-  ['Topo', 'Hamster'], ['Pipistrello', 'Vampiro'], ['Formica', 'Termite'], ['Ragno', 'Scorpione'],
-  ['Lumaca', 'Verme'], ['Medusa', 'Corallo'], ['Stella marina', 'Riccio di mare'], ['Granchio', 'Aragosta'],
-  ['Ostrica', 'Cozza'], ['Vulcano', 'Geyser'], ['Isola', 'Atollo'], ['Grotta', 'Anfratto'],
-  ['Cascata', 'Rapida'], ['Cielo', 'Atmosfera'], ['Nuvola', 'Nebbia'], ['Aurora', 'Arcobaleno'],
-  ['Eclissi', 'Cometa'], ['Quercia', 'Faggio'], ['Ulivo', 'Pino'], ['Margherita', 'Girasole'],
-  ['Orchidea', 'Giglio'], ['Cactus', 'Pianta Grassa'], ['Ghiacciaio', 'Iceberg'], ['Stagno', 'Palude'],
-  ['Duna', 'Spiaggia'], ['Scogliera', 'Rupo'], ['Piuma', 'Pelo'], ['Ala', 'Pinna'],
-  ['Corno', 'Zanna'], ['Nido', 'Tana'], ['Guscio', 'Corazza'], ['Coda', 'Zampa'],
-  ['Fulmine', 'Saetta'], ['Tramonto', 'Alba'], ['Fango', 'Argilla'], ['Pietra', 'Sasso'],
-  ['Radice', 'Ramo'], ['Foglia', 'Petalo'], ['Seme', 'Frutto'], ['Polline', 'Nettare'],
-  ['Cervo', 'Capriolo'], ['Gufo', 'Civetta'], ['Corvo', 'Gazza'], ['Passero', 'Pettirosso'],
-  ['Cigno', 'Anatra'], ['Fenicottero', 'Airone'], ['Pinguino', 'Foca'], ['Tricheco', 'Lontra'],
-  ['Alce', 'Renna'], ['Bisonte', 'Bufalo'], ['Leopardo', 'Ghepardo'], ['Iena', 'Sciacallo'],
-  ['Lemure', 'Bradipo'], ['Talpa', 'Riccio'], ['Castoro', 'Lontra'], ['Procione', 'Tasso'],
-  ['Scoiattolo', 'Ghiro'], ['Criceto', 'Porcellino d\'india'], ['Pavone', 'Fagiano'], ['Gallo', 'Tacchino'],
-  ['Gallina', 'Pulcino'], ['Oca', 'Cigno'], ['Colibrì', 'Farfalla'], ['Pipistrello', 'Civetta'],
-  ['Salamandra', 'Tritone'], ['Tartaruga', 'Testuggine'], ['Coccodrillo', 'Alligatore'], ['Camaleonte', 'Iguana'],
-  ['Polpo', 'Seppia'], ['Medusa', 'Caravella Portoghese'], ['Cavalluccio Marino', 'Dragone Foglia'], ['Manta', 'Razza'],
-  ['Barracuda', 'Luccio'], ['Trota', 'Salmone'], ['Storione', 'Pesce Spada'], ['Anguilla', 'Murena'],
-  ['Grillo', 'Cavalletta'], ['Coccinella', 'Scarabeo'], ['Mantide', 'Stecco'], ['Mosca', 'Zanzara'],
-  ['Libellula', 'Farfalla'], ['Cicala', 'Grillo'], ['Scarafaggio', 'Cimice'], ['Acaro', 'Pidocchio'],
-  ['Felce', 'Lichene'], ['Funghi', 'Muffa'], ['Edera', 'Vite'], ['Baobab', 'Sequoia'],
-  ['Salice Piangente', 'Betulla'], ['Abete', 'Larice'], ['Magnolia', 'Mimosa'], ['Lavanda', 'Rosmarino'],
-  ['Grano', 'Mais'], ['Riso', 'Bambù'], ['Canna da zucchero', 'Papiro'], ['Nenufar', 'Loto'],
-  ['Gelsomino', 'Gardenia'], ['Garofano', 'Peonia'], ['Papavero', 'Anemone'], ['Iris', 'Violetta'],
-  ['Ortensia', 'Camelia'], ['Azalea', 'Rododendro'], ['Ginestra', 'Mimosa'], ['Oleandro', 'Alloro'],
-
-  // VIAGGI E LUOGHI (Esistenti)
-  ['Roma', 'Parigi'], ['Londra', 'Berlino'], ['New York', 'Los Angeles'], ['Italia', 'Spagna'],
-  ['Scuola', 'Liceo'], ['Ufficio', 'Studio'], ['Ospedale', 'Clinica'], ['Farmacia', 'Erboristeria'],
-  ['Negozio', 'Boutique'], ['Supermercato', 'Mercato'], ['Bar', 'Caffetteria'], ['Ristorante', 'Trattoria'],
-  ['Hotel', 'Pensione'], ['Ostello', 'Campeggio'], ['Spiaggia', 'Lido'], ['Piscina', 'Parco Acquatico'],
-  ['Stazione', 'Fermata'], ['Aeroporto', 'Eliporto'], ['Treno', 'Metropolitana'], ['Aereo', 'Jet'],
-  ['Autobus', 'Pullman'], ['Tram', 'Filobus'], ['Macchina', 'SUV'], ['Moto', 'Scooter'],
-  ['Bicicletta', 'Tandem'], ['Nave', 'Yacht'], ['Traghetto', 'Motonave'], ['Piazza', 'Corso'],
-  ['Via', 'Vicolo'], ['Parco', 'Villa'], ['Giardino', 'Orto'], ['Museo', 'Pinacoteca'],
-  ['Galleria', 'Esposizione'], ['Chiesa', 'Basilica'], ['Cattedrale', 'Duomo'], ['Stadio', 'Arena'],
-  ['Palestra', 'Centro Sportivo'], ['Castello', 'Fortezza'], ['Torre', 'Campanile'], ['Fara', 'Lanterna'],
-  ['Ponte', 'Viadotto'], ['Galleria', 'Tunnel'], ['Porto', 'Molo'], ['Venezia', 'Amsterdam'],
-  ['Napoli', 'Marsiglia'], ['Madrid', 'Lisbona'], ['Stati Uniti', 'Canada'], ['Cina', 'Giappone'],
-  ['Brasile', 'Messico'], ['Australia', 'Sudafrica'], ['Egitto', 'Grecia'], ['Svizzera', 'Austria'],
-  ['Banca', 'Sportello'], ['Posta', 'Corriere'], ['Cinema', 'Sala'], ['Teatro', 'Palcoscenico'],
-  ['Discoteca', 'Club'], ['Pub', 'Birreria'], ['Biblioteca', 'Libreria'], ['Cimitero', 'Mausoleo'],
-  ['Prigione', 'Cella'], ['Tribunale', 'Municipio'], ['Fattoria', 'Cascina'], ['Stalla', 'Recinto'],
-  ['Grattacielo', 'Torre'], ['Baita', 'Chalet'], ['Rifugio', 'Bivacco'], ['Luna Park', 'Giostra'],
-  ['Zoo', 'Safari'], ['Acquario', 'Delfinario'], ['Planetario', 'Osservatorio'], ['Fiera', 'Sagra'],
-  ['Laboratorio', 'Officina'], ['Cantiere', 'Scavo'], ['Taxi', 'Navetta'], ['Camper', 'Roulotte'],
-  ['Canoa', 'Kayak'], ['Gondola', 'Piatta'], ['Sottomarino', 'Sommergibile'], ['Mongolfiera', 'Aliante'],
-  ['Milano', 'Torino'], ['Firenze', 'Siena'], ['Bologna', 'Modena'], ['Genova', 'Trieste'],
-  ['Palermo', 'Catania'], ['Bari', 'Lecce'], ['Verona', 'Padova'], ['Venezia', 'Chioggia'],
-  ['Sardegna', 'Sicilia'], ['Corsica', 'Elba'], ['Ischia', 'Capri'], ['Ponza', 'Ventotene'],
-  ['Portofino', 'Saint-Tropez'], ['Ibiza', 'Formentera'], ['Mykonos', 'Santorini'], ['Bali', 'Phuket'],
-  ['Maldives', 'Seychelles'], ['Sahara', 'Gobi'], ['Amazzonia', 'Congo'], ['Everest', 'K2'],
-  ['Alpi', 'Pirenei'], ['Appennini', 'Ande'], ['Nilo', 'Rio delle Amazzoni'], ['Danubio', 'Po'],
-  ['Garda', 'Como'], ['Maggiore', 'Trasimeno'], ['Bottega', 'Atelier'], ['Chiosco', 'Edicola'],
-  ['Lavanderia', 'Tintoria'], ['Sartoria', 'Calzoleria'], ['Ferramenta', 'Brico'], ['Vivaio', 'Fioraio'],
-  ['Edicola', 'Tabaccaio'], ['Pasticceria', 'Panetteria'], ['Macelleria', 'Pescheria'], ['Enoteca', 'Birreria'],
-  ['Casinò', 'Bingo'], ['Bowling', 'Sala Giochi'], ['Kartodromo', 'Autodromo'], ['Maneggio', 'Ippodromo'],
-  ['Palazzetto', 'Velodromo'], ['Pista di ghiaccio', 'Skate park'], ['Muro di arrampicata', 'Boulder'], ['Parco Avventura', 'Zipline'],
-
-  // ABBIGLIAMENTO, SPORT E VARIE (Esistenti)
-  ['Maglietta', 'Polo'], ['Camicia', 'Blusa'], ['Pantaloni', 'Jeans'], ['Gonna', 'Tubino'],
-  ['Vestito', 'Tuta'], ['Giacca', 'Blazer'], ['Cappotto', 'Piumino'], ['Scarpe', 'Sneakers'],
-  ['Stivali', 'Anfibi'], ['Sandali', 'Zoccoli'], ['Infradito', 'Ciabatte'], ['Calze', 'Gambaletti'],
-  ['Cappello', 'Berretto'], ['Guanti', 'Manopole'], ['Sciarpa', 'Scaldacollo'], ['Cintura', 'Bretelle'],
-  ['Occhiali da sole', 'Mascherina'], ['Orologio', 'Cronometro'], ['Collana', 'Catenina'], ['Anello', 'Fede'],
-  ['Orecchini', 'Pendenti'], ['Zaino', 'Cartella'], ['Borsa', 'Tracolla'], ['Portafoglio', 'Portamonete'],
-  ['Pigiama', 'Camicia da notte'], ['Calcio', 'Calcetto'], ['Basket', 'Pallavolo'], ['Tennis', 'Squash'],
-  ['Nuoto', 'Pallanuoto'], ['Corsa', 'Jogging'], ['Ciclismo', 'Spinning'], ['Sci', 'Slittino'],
-  ['Boxe', 'Kickboxing'], ['Danza', 'Ginnastica'], ['Scacchi', 'Dama'], ['Carte', 'Tarocchi'],
-  ['Dadi', 'fiches'], ['Yoga', 'Pilates'], ['Rugby', 'Football'], ['Baseball', 'Softball'],
-  ['Scherma', 'Fioretto'], ['Vela', 'Surf'], ['Biliardo', 'Bowling'], ['Ping Pong', 'Badminton'],
-  ['Pesca', 'Sub'], ['Freccette', 'Tiro a segno'], ['Monopoli', 'Taboo'], ['Lego', 'Costruzioni'],
-  ['Medicina', 'Sciroppo'], ['Vitamina', 'Pillola'], ['Febbre', 'Influenza'], ['Raffindigodore', 'Allergia'],
-  ['Cerotto', 'Gaza'], ['Termometro', 'Sonda'], ['Cuore', 'Polso'], ['Cervello', 'Mente'],
-  ['Dente', 'Molare'], ['Naso', 'Narice'], ['Occhio', 'Pupilla'], ['Sogno', 'Desiderio'],
-  ['Incubo', 'Paura'], ['Amore', 'Passione'], ['Amicizia', 'Lealtà'], ['Caldo', 'Afa'],
-  ['Findigodo', 'Gelo'], ['Estate', 'Vacanze'], ['Inverno', 'Natale'], ['Musica', 'Canzone'],
-  ['Profumo', 'Essenza'], ['Luce', 'Bagliore'], ['Colore', 'Tonalità'], ['Matematica', 'Algebra'],
-  ['Storia', 'Leggenda'], ['Veloce', 'Rapido'], ['Lento', 'Pigro'], ['Bello', 'Elegante'],
-  ['Nuovo', 'Moderno'], ['Pieno', 'Colmo'], ['Dolce', 'Zuccherato'], ['Morbido', 'Soffice'],
-  ['Silenzio', 'Quiete'], ['Vittoria', 'Trionfo'], ['Regalo', 'Dono'], ['Inizio', 'Partenza'],
-  ['Felpa', 'Maglione'], ['Cardigan', 'Gilet'], ['Canottiera', 'Top'], ['Bermuda', 'Pantaloncini'],
-  ['Calzettoni', 'Fantasmini'], ['Cravatta', 'Papillon'], ['Gemelli', 'Spilla da balia'], ['Fazzoletto', 'Bandana'],
-  ['Pantofole', 'Babbucce'], ['Mocassini', 'Scarpe da barca'], ['Tacchi', 'Zeppe'], ['Ballerine', 'Décolleté'],
-  ['Cappa', 'Mantello'], ['Poncho', 'Sciarpa oversize'], ['Tuta spaziale', 'Scafandro'], ['Sottoveste', 'Sottogonna'],
-  ['Corpetto', 'Corsetto'], ['Reggiseno', 'Bustino'], ['Body', 'Costume intero'], ['Bikini', 'Triangolo'],
-  ['Parastinchi', 'Ginocchiere'], ['Casco', 'Elmetto'], ['Borraccia', 'Thermos'], ['Cronometro', 'Timer'],
-  ['Fischietto', 'Sirena'], ['Medaglia', 'Coppa'], ['Trofeo', 'Targa'], ['Podio', 'Tribuna'],
-  ['Arrampicata', 'Alpinismo'], ['Trekking', 'Escursionismo'], ['Canottaggio', 'Canoa'], ['Tiro con l\'arco', 'Balestra'],
-  ['Golf', 'Minigolf'], ['Pattinaggio', 'Hockey'], ['Curling', 'Bocce'], ['Motocross', 'Rally'],
-  ['F1', 'MotoGP'], ['Surf', 'Skateboard'], ['Snowboard', 'Skiboard'], ['Paracadutismo', 'Bungee jumping'],
-  ['Yoga', 'Tai Chi'], ['Meditazione', 'Rilassamento'], ['Massaggio', 'Fisioterapia'], ['Agopuntura', 'Digitopressione'],
-  ['Farmaco', 'Rimedio'], ['Vaccino', 'Antidoto'], ['Benda', 'Fascia'], ['Garza', 'Tampone'],
-  ['Ambulanza', 'Auto medica'], ['Lettiga', 'Barella'], ['Sedia a rotelle', 'Deambulatore'], ['Stampelle', 'Tutore'],
-  ['Omeopatia', 'Fitoterapia'], ['Erboristeria', 'Spezeria'], ['Stetoscopio', 'Sfigmomanometro'], ['Scalpello', 'Bisturi'],
-  ['Paziente', 'Degente'], ['Ricovero', 'Check-up'], ['Analisi', 'Radiografia'], ['Ecografia', 'Risonanza'],
-  ['Anestesia', 'Sedazione'], ['Gesso', 'Fasciatura'], ['Sutura', 'Punti'], ['Cicatrizzante', 'Disinfettante'],
-  ['Fatica', 'Stanchezza'], ['Energia', 'Vigore'], ['Sonno', 'Riposo'], ['Veglia', 'Insonnia'],
-  ['Fame', 'Appetito'], ['Sete', 'Aridità'], ['Salute', 'Benessere'], ['Forma', 'Profilo'],
-  ['Peso', 'Massa'], ['Altezza', 'Statura'], ['Forza', 'Potenza'], ['Velocità', 'Rapidità'],
-  ['Riflessi', 'Istinto'], ['Talento', 'Genio'], ['Abilità', 'Maestria'], ['Impegno', 'Sforzo'],
-
-  // --- NUOVE CATEGORIE AGGIUNTE ---
-  
-  // TECNOLOGIA ED ELETTRONICA
-  ['Smartphone', 'Tablet'], ['Computer', 'Portatile'], ['Mouse', 'Tastiera'], ['Monitor', 'Televisore'],
-  ['Auricolari', 'Cuffie'], ['Smartwatch', 'Contapassi'], ['Router', 'Modem'], ['Chiavetta USB', 'Hard Disk'],
-  ['Stampante', 'Scanner'], ['Console', 'PC Gaming'], ['Wi-Fi', 'Bluetooth'], ['App', 'Sito Web'],
-  ['Social Network', 'Forum'], ['Videogioco', 'Film Interattivo'], ['Drone', 'Elicottero Radiocomandato'],
-  ['Cavo HDMI', 'Cavo USB'], ['Password', 'PIN'], ['Antivirus', 'Firewall'], ['Intelligenza Artificiale', 'Algoritmo'],
-
-  // MESTIERI E PROFESSIONI
-  ['Medico', 'Infermiere'], ['Avvocato', 'Giudice'], ['Poliziotto', 'Carabiniere'], ['Insegnante', 'Professore'],
-  ['Cuoco', 'Pasticciere'], ['Muratore', 'Falegname'], ['Idraulico', 'Elettricista'], ['Attore', 'Regista'],
-  ['Cantante', 'Musicista'], ['Giornalista', 'Scrittore'], ['Architetto', 'Ingegnere'], ['Barista', 'Cameriere'],
-  ['Sartoria', 'Stilista'], ['Pilota', 'Hostess'], ['Autista', 'Tassista'], ['Dentista', 'Igienista'],
-  ['Psicologo', 'Psichiatra'], ['Farmacista', 'Erborista'], ['Fotografo', 'Cameraman'], ['Sindaco', 'Presidente'],
-
-  // ARTE E INTRATTENIMENTO
-  ['Pittura', 'Scultura'], ['Fumetto', 'Manga'], ['Romanzo', 'Poesia'], ['Commedia', 'Tragedia'],
-  ['Film', 'Serie TV'], ['Documentario', 'Reportage'], ['Fotografia', 'Ritratto'], ['Chitarra', 'Basso'],
-  ['Pianoforte', 'Tastiera (musicale)'], ['Batteria', 'Percussioni'], ['Flauto', 'Clarinetto'], ['Violino', 'Violoncello'],
-  ['Teatro', 'Cinema'], ['Concerto', 'Festival'], ['Museo', 'Mostra'], ['Acrobata', 'Giocoliere'],
-  ['Magia', 'Illusionismo'], ['Anime', 'Cartone Animato'], ['Podcast', 'Programma Radio'], ['DJ', 'Vocalist'],
-
-  // CIBI INTERNAZIONALI E STREET FOOD
-  ['Tacos', 'Burrito'], ['Nachos', 'Tortillas'], ['Guacamole', 'Hummus'], ['Kebab', 'Gyros'],
-  ['Gyoza', 'Ravioli cinesi'], ['Ramen', 'Noodles'], ['Tempura', 'Fritto Misto'], ['Falafel', 'Polpette'],
-  ['Pancake', 'Waffle'], ['Brownie', 'Muffin'], ['Cheeseburger', 'Hamburger'], ['Hot Dog', 'Corn Dog'],
-
-  // CONCETTI ASTRATTI
-  ['Speranza', 'Illusione'], ['Paura', 'Terrore'], ['Gioia', 'Felicità'], ['Tristezza', 'Malinconia'],
-  ['Rabbia', 'Frustrazione'], ['Coraggio', 'Temerarietà'], ['Intelligenza', 'Saggezza'], ['Bellezza', 'Fascino'],
-  ['Ricchezza', 'Lusso'], ['Povertà', 'Miseria'], ['Destino', 'Fato'], ['Fortuna', 'Caso'],
-  ['Sogno', 'Obiettivo'], ['Ricordo', 'Nostalgia'], ['Amore', 'Infatuazione'], ['Simpatia', 'Empatia'],
-  
-  // SPAZIO E SCIENZA
-  ['Astronauta', 'Cosmonauta'], ['Galassia', 'Nebulosa'], ['Pianeta', 'Asteroide'], ['Sole', 'Stella nana'],
-  ['Microscopio', 'Telescopio'], ['Atomo', 'Molecola'], ['Laboratorio', 'Osservatorio'], ['Razzo', 'Navetta'],
-  ['Gravità', 'Magnetismo'], ['Elettricità', 'Energia Solare'],
-
-  // --- NUOVE PAROLE (SEMPLICI) ---
-
-  // CIBO E BEVANDE
-  ['Carbonara', 'Amatriciana'], ['Spaghetti', 'Bucatini'], ['Penne', 'Fusilli'], ['Minestrone', 'Vellutata'],
-  ['Cotoletta', 'Bistecca'], ['Maritozzo', 'Bignè'], ['Pizzetta', 'Calzone'], ['Supplì', 'Arancino'],
-  ['Olive', 'Capperi'], ['Pomodoro', 'Peperone'], ['Cetriolo', 'Ravanello'], ['Lecca-lecca', 'Caramella'],
-  ['Chewing gum', 'Mentina'], ['Taralli', 'Grissini'], ['Crackers', 'Gallette'], ['Brodo', 'Zuppa'],
-  ['Aranciata', 'Limonata'], ['Cappuccino', 'Latte macchiato'], ['Espresso', 'Americano'], ['Succo di frutta', 'Spremuta'],
-  ['Merendina', 'Snack'], ['Uva', 'Uvetta'], ['Cocco', 'Banana'], ['Zucchero filato', 'Mela caramellata'],
-  ['Barbecue', 'Grigliata'], ['Picnic', 'Pranzo al sacco'], ['Colazione', 'Merenda'], ['Pranzo', 'Cena'],
-  ['Aperitivo', 'Apericena'],
-
-  // CASA E OGGETTI
-  ['Finestra', 'Porta'], ['Balcone', 'Terrazzo'], ['Cantina', 'Soffitta'], ['Garage', 'Posto auto'],
-  ['Vasca', 'Doccia'], ['Lavandino', 'Bidet'], ['Cucina', 'Salotto'], ['Camera da letto', 'Cameretta'],
-  ['Lenzuolo', 'Piumone'], ['Materasso', 'Brandina'], ['Busta', 'Sacchetto'], ['Scatola', 'Cassetta'],
-  ['Barattolo', 'Vasetto'], ['Radio', 'Giradischi'], ['Libro', 'Rivista'], ['Giornale', 'Volantino'],
-  ['Lettera', 'Cartolina'], ['Francobollo', 'Timbro'], ['Candeggina', 'Detersivo'], ['Termosifone', 'Camino'],
-
-  // GIOCHI E GIOCATTOLI
-  ['Palla', 'Pallone'], ['Bambola', 'Peluche'], ['Puzzle', 'Cruciverba'], ['Aquilone', 'Palloncino'],
-  ['Trottola', 'Yo-yo'], ['Biglia', 'Pallina'], ['Nascondino', 'Acchiapparella'], ['Briscola', 'Scala quaranta'],
-  ['Tombola', 'Lotteria'], ['Gratta e vinci', 'Lotto'], ['Cluedo', 'Risiko'], ['Jenga', 'Domino'],
-
-  // ANIMALI E NATURA
-  ['Cavallo', 'Asino'], ['Pony', 'Unicorno'], ['Pesce rosso', 'Pesce palla'], ['Gattino', 'Cucciolo'],
-  ['Rinoceronte', 'Triceratopo'], ['Dinosauro', 'Drago'], ['Tirannosauro', 'Velociraptor'], ['Struzzo', 'Emù'],
-  ['Neve', 'Ghiaccio'], ['Temporale', 'Uragano'], ['Terremoto', 'Tsunami'], ['Onda', 'Marea'],
-  ['Conchiglia', 'Perla'], ['Fiore', 'Pianta'], ['Fuochi d\'artificio', 'Petardo'], ['Primavera', 'Autunno'],
-  ['Mattina', 'Pomeriggio'], ['Notte', 'Sera'],
-
-  // LUOGHI
-  ['Montagne russe', 'Autoscontro'], ['Parco giochi', 'Oratorio'], ['Asilo', 'Scuola elementare'], ['Università', 'Accademia'],
-  ['Mensa', 'Self-service'], ['Pizzeria', 'Paninoteca'], ['Gelateria', 'Yogurteria'], ['Autogrill', 'Benzinaio'],
-  ['Autostrada', 'Superstrada'], ['Rotonda', 'Semaforo'], ['Marciapiede', 'Strisce pedonali'], ['Ascensore', 'Scala mobile'],
-  ['Centro commerciale', 'Outlet'], ['Spa', 'Terme'], ['Sauna', 'Bagno turco'], ['Barbiere', 'Parrucchiere'],
-  ['Canile', 'Gattile'],
-
-  // PERSONAGGI E MESTIERI
-  ['Veterinario', 'Pediatra'], ['Pompiere', 'Vigile'], ['Postino', 'Fattorino'], ['Contadino', 'Allevatore'],
-  ['Pescatore', 'Marinaio'], ['Pirata', 'Corsaro'], ['Cavaliere', 'Guerriero'], ['Ninja', 'Samurai'],
-  ['Re', 'Imperatore'], ['Regina', 'Principessa'], ['Principe', 'Conte'], ['Strega', 'Fata'],
-  ['Mago', 'Stregone'], ['Fantasma', 'Spirito'], ['Zombie', 'Mummia'], ['Babbo Natale', 'Befana'],
-  ['Elfo', 'Folletto'], ['Batman', 'Superman'], ['Spiderman', 'Iron Man'], ['Topolino', 'Paperino'],
-  ['Cenerentola', 'Biancaneve'], ['Pinocchio', 'Peter Pan'], ['Shrek', 'Madagascar'],
-
-  // TECNOLOGIA E POP
-  ['Harry Potter', 'Il Signore degli Anelli'], ['Pokémon', 'Digimon'], ['Super Mario', 'Sonic'], ['Minecraft', 'Fortnite'],
-  ['PlayStation', 'Xbox'], ['Netflix', 'Prime Video'], ['Instagram', 'TikTok'], ['WhatsApp', 'Telegram'],
-  ['Google', 'Wikipedia'], ['Emoji', 'Sticker'], ['Selfie', 'Foto di gruppo'], ['Messaggio', 'Email'],
-  ['Videochiamata', 'Telefonata'], ['Disney', 'Pixar'], ['Sanremo', 'Eurovision'],
-
-  // EVENTI E MOMENTI
-  ['Compleanno', 'Anniversario'], ['Matrimonio', 'Battesimo'], ['Festa a sorpresa', 'Addio al celibato'], ['Carnevale', 'Halloween'],
-  ['Capodanno', 'Ferragosto'], ['Pasqua', 'Pasquetta'], ['Gita', 'Escursione'], ['Crociera', 'Villaggio turistico'],
-  ['Esame', 'Interrogazione'], ['Compito', 'Verifica'], ['Colloquio', 'Riunione'], ['Sciopero', 'Manifestazione'],
-  ['Karaoke', 'Talent show'],
-
-  // SPORT
-  ['Portiere', 'Difensore'], ['Arbitro', 'Allenatore'], ['Rigore', 'Punizione'], ['Gol', 'Canestro'],
-  ['Inter', 'Milan'], ['Maratona', 'Staffetta'], ['Olimpiadi', 'Mondiali'], ['Tuffo', 'Capriola'],
-
-  // CORPO E GESTI
-  ['Mano', 'Piede'], ['Ginocchio', 'Gomito'], ['Capelli', 'Barba'], ['Baffi', 'Pizzetto'],
-  ['Sorriso', 'Risata'], ['Lacrima', 'Sudore'], ['Starnuto', 'Tosse'], ['Singhiozzo', 'Sbadiglio'],
-  ['Bacio', 'Abbraccio'], ['Tatuaggio', 'Piercing'], ['Lentiggini', 'Nei'],
-
-  // MEZZI DI TRASPORTO
-  ['Monopattino', 'Hoverboard'], ['Trattore', 'Ruspa'], ['Camion', 'Furgone'], ['Elicottero', 'Idrovolante'],
-  ['Funivia', 'Seggiovia'], ['Motoscafo', 'Gommone'], ['Pedalò', 'Canotto'], ['Frecciarossa', 'Italo'],
-
-  // MUSICA E ARTE
-  ['Tromba', 'Trombone'], ['Ukulele', 'Mandolino'], ['Microfono', 'Altoparlante'], ['Rap', 'Trap'],
-  ['Rock', 'Metal'], ['Opera', 'Musical'], ['Valzer', 'Tango'], ['Pastelli', 'Acquerelli']
-];
-
-// --- FUNZIONI DI UTILITA' ---
-const shuffleArray = (array) => {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-  return newArray;
-};
-
-// --- STILE ---
-const avatarGradients = [
-  'from-violet-500 to-fuchsia-500',
-  'from-sky-400 to-indigo-500',
-  'from-emerald-400 to-teal-600',
-  'from-amber-400 to-orange-600',
-  'from-rose-400 to-pink-600',
-  'from-cyan-400 to-blue-600',
-  'from-lime-400 to-emerald-600',
-  'from-fuchsia-400 to-purple-700',
-];
-
-// Colore avatar stabile in base al nome
-const avatarGradient = (name) => {
-  let hash = 0;
-  for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) | 0;
-  return avatarGradients[Math.abs(hash) % avatarGradients.length];
-};
-
-const roleStyles = {
-  'Civile': {
-    text: 'text-emerald-300',
-    badge: 'bg-emerald-400/15 text-emerald-300 border-emerald-400/30',
-    glow: 'shadow-[0_0_60px_-10px_rgba(52,211,153,0.55)]',
-  },
-  'Undercover': {
-    text: 'text-rose-400',
-    badge: 'bg-rose-500/15 text-rose-300 border-rose-400/30',
-    glow: 'shadow-[0_0_60px_-10px_rgba(244,63,94,0.6)]',
-  },
-  'Mr. White': {
-    text: 'text-white',
-    badge: 'bg-white/10 text-white border-white/30',
-    glow: 'shadow-[0_0_60px_-10px_rgba(255,255,255,0.45)]',
-  },
-};
 
 const roleOptions = [
   { id: 'civili', label: 'Civili', desc: 'Hanno la parola segreta', icon: Shield, accent: 'text-emerald-300', chip: 'bg-emerald-400/15 border-emerald-400/30' },
@@ -379,6 +32,7 @@ const winThemes = {
     gradient: 'from-emerald-300 via-teal-200 to-cyan-300',
     glow: 'rgba(52,211,153,0.45)',
     ring: 'border-emerald-400/30',
+    spin: '#6ee7b7',
   },
   undercover: {
     title: 'GLI UNDERCOVER VINCONO!',
@@ -386,6 +40,7 @@ const winThemes = {
     gradient: 'from-rose-400 via-fuchsia-400 to-orange-300',
     glow: 'rgba(244,63,94,0.45)',
     ring: 'border-rose-400/30',
+    spin: '#fb7185',
   },
   mrWhite: {
     title: 'MR. WHITE VINCE!',
@@ -393,6 +48,7 @@ const winThemes = {
     gradient: 'from-white via-slate-200 to-violet-300',
     glow: 'rgba(255,255,255,0.35)',
     ring: 'border-white/30',
+    spin: '#ffffff',
   },
 };
 
@@ -409,61 +65,146 @@ const wordSize = (word) => {
   return 'text-3xl sm:text-5xl';
 };
 
-const confettiColors = ['#a78bfa', '#f0abfc', '#fb7185', '#fcd34d', '#34d399', '#22d3ee'];
-const confettiPieces = Array.from({ length: 56 }, (_, i) => ({
-  left: `${(i * 37) % 100}%`,
-  color: confettiColors[i % confettiColors.length],
-  delay: `${(i % 14) * 0.09}s`,
-  dx: `${((i * 53) % 200) - 100}px`,
-  rot: `${((i * 97) % 900) - 450}deg`,
-  round: i % 3 === 0,
+const particles = Array.from({ length: 22 }, (_, i) => ({
+  left: `${(i * 41 + 7) % 100}%`,
+  size: 2 + (i % 3),
+  duration: `${14 + (i * 7) % 16}s`,
+  delay: `${-((i * 3.7) % 20)}s`,
+  color: ['#c4b5fd', '#f9a8d4', '#67e8f9', '#ffffff'][i % 4],
 }));
 
-function Confetti() {
-  return (
-    <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden" aria-hidden="true">
-      {confettiPieces.map((p, i) => (
-        <span
-          key={i}
-          className="confetti"
-          style={{
-            left: p.left,
-            background: p.color,
-            animationDelay: p.delay,
-            '--dx': p.dx,
-            '--rot': p.rot,
-            ...(p.round && { width: 10, height: 10, borderRadius: 9999 }),
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+// Salvataggio letto una volta all'avvio
+const saved = loadSave();
+const savedGame = saved.game ?? {};
+
+const allPairs = wordCategories.flatMap(c => c.pairs);
+const pairKey = (pair) => pair.join('|');
+const pairsFor = (categoryId) => wordCategories.find(c => c.id === categoryId)?.pairs ?? allPairs;
+const categoryLabelFor = (categoryId) => wordCategories.find(c => c.id === categoryId)?.label ?? 'Tutte le categorie';
 
 export default function App() {
-  const [scores, setScores] = useState({}); // NUOVO: Stato per i punteggi
+  // Punti della sessione, usati solo quando non è collegato un gruppo online
+  const [sessionScores, setSessionScores] = useState({});
 
   // Stati principali: 'setup', 'distribution', 'playing', 'gameover'
-  const [gameState, setGameState] = useState('setup');
-  
+  const [gameState, setGameState] = useState(savedGame.gameState ?? 'setup');
+
   // Setup state
-  const [playersInput, setPlayersInput] = useState([]);
+  const [playersInput, setPlayersInput] = useState(saved.playersInput ?? []);
   const [newPlayerName, setNewPlayerName] = useState('');
-  const [rolesCount, setRolesCount] = useState({ civili: 0, undercover: 0, mrWhite: 0 });
-  
+  const [rolesCount, setRolesCount] = useState(saved.rolesCount ?? { civili: 0, undercover: 0, mrWhite: 0 });
+  const [category, setCategory] = useState(saved.category ?? 'all');
+  const [usedPairs, setUsedPairs] = useState(saved.usedPairs ?? []);
+
   // Game state
-  const [players, setPlayers] = useState([]);
-  const [civilianWord, setCivilianWord] = useState('');
-  const [undercoverWord, setUndercoverWord] = useState('');
-  
+  const [players, setPlayers] = useState(savedGame.players ?? []);
+  const [civilianWord, setCivilianWord] = useState(savedGame.civilianWord ?? '');
+  const [undercoverWord, setUndercoverWord] = useState(savedGame.undercoverWord ?? '');
+  const [categoryLabel, setCategoryLabel] = useState(savedGame.categoryLabel ?? '');
+
   // Distribution state
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(savedGame.currentPlayerIndex ?? 0);
   const [isWordRevealed, setIsWordRevealed] = useState(false);
-  
+
   // Game progress state
-  const [winner, setWinner] = useState(null); // 'civili', 'undercover', 'mrWhite'
-  const [eliminatedJustNow, setEliminatedJustNow] = useState(null);
+  const [winner, setWinner] = useState(savedGame.winner ?? null); // 'civili', 'undercover', 'mrWhite'
+  const [eliminatedJustNow, setEliminatedJustNow] = useState(savedGame.eliminatedJustNow ?? null);
   const [mrWhiteGuess, setMrWhiteGuess] = useState('');
+  const [eliminationOrder, setEliminationOrder] = useState(savedGame.eliminationOrder ?? []); // id in ordine di eliminazione
+  const [isVoting, setIsVoting] = useState(false);
+  const [spunRound, setSpunRound] = useState(0);
+  const [timerDuration, setTimerDuration] = useState(saved.timerDuration ?? 60);
+
+  const [showStats, setShowStats] = useState(false);
+  const [muted, setMutedState] = useState(saved.muted ?? false);
+
+  // Statistiche online (Firebase), condivise da chi usa lo stesso codice gruppo
+  const [groupCode, setGroupCode] = useState(() => {
+    const code = normalizeGroupCode(saved.groupCode ?? '');
+    return isValidGroupCode(code) ? code : '';
+  });
+  const cloud = useGroupStats(groupCode);
+  const [cloudSaveError, setCloudSaveError] = useState(null);
+  const scores = groupCode ? cloud.scores : sessionScores;
+
+  // Avatar scelti: sul telefono e, se c'è un gruppo, anche online (così li vedono tutti)
+  const [localAvatars, setLocalAvatars] = useState(saved.avatars ?? {});
+  const [pickingAvatarFor, setPickingAvatarFor] = useState(null);
+  const avatars = groupCode ? { ...localAvatars, ...cloud.avatars } : localAvatars;
+  const chooseAvatar = (name, id) => {
+    setLocalAvatars(prev => ({ ...prev, [name]: id }));
+    if (groupCode) setAvatarOnline(groupCode, name, id).catch(() => { /* resta comunque salvato sul telefono */ });
+    sounds.pop();
+    buzz(20);
+  };
+
+  // Salvataggio automatico a ogni cambiamento
+  useEffect(() => {
+    writeSave({
+      playersInput, rolesCount, usedPairs, category, muted, timerDuration, groupCode, avatars: localAvatars,
+      game: gameState === 'setup' ? null : {
+        gameState, players, civilianWord, undercoverWord, currentPlayerIndex,
+        winner, eliminatedJustNow, eliminationOrder, categoryLabel,
+      },
+    });
+  }, [playersInput, rolesCount, usedPairs, category, muted, timerDuration, groupCode, localAvatars,
+    gameState, players, civilianWord, undercoverWord, currentPlayerIndex, winner, eliminatedJustNow, eliminationOrder, categoryLabel]);
+
+  useEffect(() => {
+    setSoundMuted(muted);
+  }, [muted]);
+
+  // Onda di luce (e click) su ogni pulsante quando lo tocchi
+  useEffect(() => {
+    const handlePointerDown = (e) => {
+      const btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      sounds.click();
+      if (prefersReducedMotion()) return;
+      const r = btn.getBoundingClientRect();
+      const size = Math.max(r.width, r.height) * 2.2;
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${e.clientX - r.left - size / 2}px`;
+      ripple.style.top = `${e.clientY - r.top - size / 2}px`;
+      if (getComputedStyle(btn).position === 'static') btn.style.position = 'relative';
+      btn.style.overflow = 'hidden';
+      btn.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, []);
+
+  // Luce di sfondo che segue il mouse (solo desktop)
+  useEffect(() => {
+    let frame;
+    const handleMove = (e) => {
+      if (e.pointerType !== 'mouse') return;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        document.documentElement.style.setProperty('--sx', `${e.clientX}px`);
+        document.documentElement.style.setProperty('--sy', `${e.clientY}px`);
+      });
+    };
+    window.addEventListener('pointermove', handleMove);
+    return () => { window.removeEventListener('pointermove', handleMove); cancelAnimationFrame(frame); };
+  }, []);
+
+  // Festa del proprietario: il numero cambia a ogni arrivo, così l'animazione riparte
+  const [ownerParty, setOwnerParty] = useState(0);
+  const celebrateOwner = () => {
+    buzz([100, 50, 100, 50, 300]);
+    sounds.party();
+    setOwnerParty(n => n + 1);
+  };
+
+  useEffect(() => {
+    if (!ownerParty) return;
+    const timeout = setTimeout(() => setOwnerParty(0), 6000);
+    return () => clearTimeout(timeout);
+  }, [ownerParty]);
 
   // --- LOGICA DI SETUP ---
   const addPlayer = (e) => {
@@ -472,6 +213,8 @@ export default function App() {
       setPlayersInput([...playersInput, newPlayerName.trim()]);
       setRolesCount(prev => ({ ...prev, civili: prev.civili + 1 })); // Auto-incrementa civili
       setNewPlayerName('');
+      sounds.pop();
+      if (isOwner(newPlayerName)) celebrateOwner();
     }
   };
 
@@ -479,6 +222,7 @@ export default function App() {
     setPlayersInput(playersInput.filter((_, index) => index !== indexToRemove));
     // Aggiusta i ruoli per non superare il totale
     if (rolesCount.civili > 0) setRolesCount(prev => ({ ...prev, civili: prev.civili - 1 }));
+    sounds.remove();
   };
 
   const updateRoleCount = (role, delta) => {
@@ -489,17 +233,43 @@ export default function App() {
     });
   };
 
+  // Ruoli consigliati in base al numero di giocatori
+  const suggestRoles = () => {
+    const n = playersInput.length;
+    if (n < 3) return;
+    const mrWhite = n >= 5 ? 1 : 0;
+    const undercover = n <= 6 ? 1 : n <= 8 ? 2 : Math.floor(n / 3);
+    setRolesCount({ civili: n - undercover - mrWhite, undercover, mrWhite });
+    sounds.reveal();
+  };
+
   const totalRoles = rolesCount.civili + rolesCount.undercover + rolesCount.mrWhite;
   const isSetupValid = totalRoles === playersInput.length && rolesCount.civili > 0 && playersInput.length >= 3;
+
+  const usedSet = new Set(usedPairs);
+  const categoryPool = pairsFor(category);
+  const freshPairsLeft = categoryPool.filter(p => !usedSet.has(pairKey(p))).length;
 
 const startGame = () => {
     if (!isSetupValid) return;
 
-    const randomPair = wordPairs[Math.floor(Math.random() * wordPairs.length)];
+    // Coppia mai uscita dalla categoria scelta; finite tutte, la categoria riparte da capo
+    const pool = pairsFor(category);
+    let freshPairs = pool.filter(p => !usedSet.has(pairKey(p)));
+    let keptUsed = usedPairs;
+    if (freshPairs.length === 0) {
+      const poolKeys = new Set(pool.map(pairKey));
+      keptUsed = usedPairs.filter(k => !poolKeys.has(k));
+      freshPairs = pool;
+    }
+    const randomPair = freshPairs[Math.floor(Math.random() * freshPairs.length)];
+    setUsedPairs([...keptUsed, pairKey(randomPair)]);
+    setCategoryLabel(categoryLabelFor(category));
+
     const isFirstCiv = Math.random() > 0.5;
     const civWord = isFirstCiv ? randomPair[0] : randomPair[1];
     const undWord = isFirstCiv ? randomPair[1] : randomPair[0];
-    
+
     setCivilianWord(civWord);
     setUndercoverWord(undWord);
 
@@ -507,7 +277,7 @@ const startGame = () => {
     for (let i = 0; i < rolesCount.civili; i++) rolesArray.push('Civile');
     for (let i = 0; i < rolesCount.undercover; i++) rolesArray.push('Undercover');
     for (let i = 0; i < rolesCount.mrWhite; i++) rolesArray.push('Mr. White');
-    
+
     rolesArray = shuffleArray(rolesArray);
 
     // --- NUOVA LOGICA: MR. WHITE AL PRIMO POSTO AL 10% ---
@@ -550,11 +320,18 @@ const startGame = () => {
     setIsWordRevealed(false);
     setWinner(null);
     setEliminatedJustNow(null);
+    setEliminationOrder([]);
+    setIsVoting(false);
+    setSpunRound(0);
   };
 
   // --- LOGICA DI DISTRIBUZIONE ---
-  const handleReveal = () => setIsWordRevealed(true);
-  
+  const handleReveal = () => {
+    setIsWordRevealed(true);
+    sounds.whoosh();
+    sounds.reveal();
+  };
+
   const handleNextPlayer = () => {
     if (currentPlayerIndex < players.length - 1) {
       setCurrentPlayerIndex(currentPlayerIndex + 1);
@@ -568,40 +345,88 @@ const startGame = () => {
 
   const eliminatePlayer = (id) => {
     const updatedPlayers = players.map(p => p.id === id ? { ...p, isAlive: false } : p);
-    
+
     // Separa vivi e morti
     const alive = updatedPlayers.filter(p => p.isAlive);
     const dead = updatedPlayers.filter(p => !p.isAlive);
-    
+
     // Mescola i vivi casualmente
     const shuffledAlive = shuffleArray(alive);
-    
+
     // Ricomponi: prima i vivi mescolati, poi i morti
     const reordeindigoPlayers = [...shuffledAlive, ...dead];
-    
+
     setPlayers(reordeindigoPlayers);
     const eliminatedPlayer = reordeindigoPlayers.find(p => p.id === id);
     setEliminatedJustNow(eliminatedPlayer);
+    setEliminationOrder(prev => [...prev, id]);
     };
+
+  // Eliminazione dal pulsante o dalla votazione: effetti + logica
+  const handleEliminate = (id) => {
+    buzz([60, 40, 120]);
+    sounds.stamp();
+    setIsVoting(false);
+    eliminatePlayer(id);
+  };
 
   // NUOVO: Funzione per aggiornare i punteggi a fine partita
   const updateScores = (winningRole) => {
-    setScores(prevScores => {
-      const newScores = { ...prevScores };
-      players.forEach(player => {
-        let pointsToAdd = 0;
-        // Assegnazione punti in base alle regole
-        if (winningRole === 'civili' && player.role === 'Civile') pointsToAdd = 2;
-        if (winningRole === 'undercover' && player.role === 'Undercover') pointsToAdd = 10;
-        if (winningRole === 'mrWhite' && player.role === 'Mr. White') pointsToAdd = 6;
-
-        if (pointsToAdd > 0) {
-          // Somma ai punti precedenti (o 0 se è la prima partita)
-          newScores[player.name] = (newScores[player.name] || 0) + pointsToAdd;
-        }
-      });
-      return newScores;
+    const points = {};
+    players.forEach(player => {
+      let pointsToAdd = 0;
+      // Assegnazione punti in base alle regole
+      if (winningRole === 'civili' && player.role === 'Civile') pointsToAdd = 2;
+      if (winningRole === 'undercover' && player.role === 'Undercover') pointsToAdd = 10;
+      if (winningRole === 'mrWhite' && player.role === 'Mr. White') pointsToAdd = 6;
+      if (pointsToAdd > 0) points[player.name] = pointsToAdd;
     });
+
+    // Con un gruppo online i punti vanno su Firebase insieme alle statistiche (vedi recordGame)
+    if (!groupCode) {
+      setSessionScores(prevScores => {
+        const newScores = { ...prevScores };
+        // Somma ai punti precedenti (o 0 se è la prima partita)
+        Object.entries(points).forEach(([name, p]) => { newScores[name] = (newScores[name] || 0) + p; });
+        return newScores;
+      });
+    }
+    return points;
+  };
+
+  // Statistiche per giocatore + voce nello storico, salvate sul gruppo online
+  const recordGame = (winningRole, mrWhiteGuessed, points) => {
+    if (!groupCode) return;
+    setCloudSaveError(null);
+    recordGameOnline(groupCode, {
+      players,
+      winningRole,
+      points,
+      firstOutId: eliminationOrder[0],
+      guesserName: mrWhiteGuessed ? eliminatedJustNow?.name : null,
+      entry: {
+        date: Date.now(),
+        winner: winningRole,
+        civilianWord,
+        undercoverWord,
+        category: categoryLabel,
+        mrWhiteGuessed,
+        players: players.map(p => ({ name: p.name, role: p.role, alive: p.isAlive })),
+      },
+    }).catch(err => setCloudSaveError(err?.code ?? 'sconosciuto'));
+  };
+
+
+  // Fine partita: vincitore, punti, statistiche, suono
+  const endGame = (winningRole, { mrWhiteGuessed = false } = {}) => {
+    setWinner(winningRole);
+    const points = updateScores(winningRole); // Assegna punti
+    recordGame(winningRole, mrWhiteGuessed, points);
+    setGameState('gameover');
+    setEliminatedJustNow(null);
+    if (winningRole === 'civili') sounds.fanfare();
+    else if (winningRole === 'undercover') sounds.sneaky();
+    else sounds.ghost();
   };
 
 // NUOVO: Controlla se la parola inserita da Mr. White è corretta
@@ -629,20 +454,11 @@ const startGame = () => {
     const aliveMrWhites = alivePlayers.filter(p => p.role === 'Mr. White').length;
 
     if (aliveUndercovers === 0 && aliveMrWhites === 0) {
-      setWinner('civili');
-      updateScores('civili'); // Assegna punti
-      setGameState('gameover');
-      setEliminatedJustNow(null);
+      endGame('civili');
     } else if (aliveUndercovers >= aliveCivilians && aliveMrWhites === 0) {
-      setWinner('undercover');
-      updateScores('undercover'); // Assegna punti
-      setGameState('gameover');
-      setEliminatedJustNow(null);
+      endGame('undercover');
     } else if (aliveUndercovers + aliveCivilians === 1 && aliveMrWhites > 0) {
-      setWinner('mrWhite');
-      updateScores('mrWhite'); // Assegna punti
-      setGameState('gameover');
-      setEliminatedJustNow(null);
+      endGame('mrWhite');
     } else {
       setEliminatedJustNow(null);
     }
@@ -650,10 +466,7 @@ const startGame = () => {
 
 
   const mrWhiteGuessedWord = () => {
-    setWinner('mrWhite');
-    updateScores('mrWhite'); // Assegna punti se indovina
-    setGameState('gameover');
-    setEliminatedJustNow(null);
+    endGame('mrWhite', { mrWhiteGuessed: true }); // Assegna punti se indovina
   };
 
 
@@ -666,6 +479,17 @@ const startGame = () => {
     setWinner(null);
     setEliminatedJustNow(null);
     setMrWhiteGuess('');
+    setEliminationOrder([]);
+    setIsVoting(false);
+  };
+
+  const resetStats = () => {
+    setSessionScores({});
+    if (groupCode) return resetGroupOnline(groupCode);
+  };
+
+  const toggleMuted = () => {
+    setMutedState(m => !m);
   };
 
   // --- RENDERS ---
@@ -676,15 +500,28 @@ const startGame = () => {
           <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
           Missione classificata
         </div>
-        <h1 className="font-display font-black tracking-tight leading-none text-[clamp(1.9rem,9.5vw,5.5rem)]">
+        <h1 className="font-display font-black tracking-tight leading-none text-[clamp(1.9rem,9.5vw,5.5rem)] animate-tracking-in">
           <span className="glitch" data-text="UNDERCOVER">
             <span className="text-gradient">UNDERCOVER</span>
           </span>
         </h1>
-        <p className="mt-4 text-white/60 font-medium text-base sm:text-xl">Trova l'impostore tra di voi!</p>
+        <p className="mt-4 text-white/60 font-medium text-base sm:text-xl min-h-[1.5rem] sm:min-h-[1.75rem]">
+          <Typewriter text="Trova l'impostore tra di voi!" delay={900} />
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowStats(true)}
+          className="btn-ghost mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold"
+        >
+          <ChartBar size={16} className="text-violet-300" /> Statistiche
+          {groupCode
+            ? <span className="flex items-center gap-1 text-white/45"><Cloud size={14} /> {groupCode}</span>
+            : <span className="text-white/35">· solo sessione</span>}
+        </button>
       </header>
 
       <div className="flex justify-center py-4 animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+        <Tilt glareClassName="hidden">
         <div className="relative polaroid w-64 sm:w-80">
           <div className="tape" />
           <img
@@ -700,6 +537,7 @@ const startGame = () => {
             Sospettato
           </div>
         </div>
+        </Tilt>
       </div>
 
       <section className="glass rounded-[2rem] p-4 sm:p-8 space-y-5 animate-fadeIn" style={{ animationDelay: '0.15s' }}>
@@ -737,11 +575,21 @@ const startGame = () => {
             {playersInput.map((p, i) => (
               <div
                 key={p}
-                className="flex items-center gap-2.5 bg-white/5 border border-white/10 pl-1.5 pr-3 py-1.5 rounded-full text-base sm:text-lg font-semibold animate-bounce-in"
+                className={`flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 rounded-full text-base sm:text-lg font-semibold ${isOwner(p) ? 'owner-chip' : 'bg-white/5 border border-white/10 animate-bounce-in'}`}
               >
-                <span className={`w-8 h-8 rounded-full bg-linear-to-br ${avatarGradient(p)} flex items-center justify-center text-sm font-black`}>
-                  {p.charAt(0).toUpperCase()}
-                </span>
+                <button
+                  type="button"
+                  onClick={() => !isOwner(p) && setPickingAvatarFor(p)}
+                  aria-label={isOwner(p) ? 'Il Capo' : `Scegli l'avatar di ${p}`}
+                  className={`relative rounded-full transition-transform ${isOwner(p) ? 'cursor-default' : 'hover:scale-110 active:scale-95'}`}
+                >
+                  <PlayerAvatar name={p} className="w-9 h-9" rounded="rounded-full" />
+                  {!isOwner(p) && (
+                    <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-violet-500 border-2 border-[#1a1530] flex items-center justify-center">
+                      <Pencil size={7} strokeWidth={3} />
+                    </span>
+                  )}
+                </button>
                 {p}
                 <button
                   onClick={() => removePlayer(i)}
@@ -754,6 +602,11 @@ const startGame = () => {
             ))}
           </div>
         )}
+        {playersInput.length > 0 && (
+          <p className="text-xs sm:text-sm text-white/40 flex items-center gap-1.5">
+            <Pencil size={12} /> Tocca un avatar per scegliere il tuo agente
+          </p>
+        )}
       </section>
 
       <section className="glass rounded-[2rem] p-4 sm:p-8 space-y-5 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
@@ -764,6 +617,14 @@ const startGame = () => {
             </span>
             Ruoli
           </h2>
+          <button
+            type="button"
+            onClick={suggestRoles}
+            disabled={playersInput.length < 3}
+            className="btn-ghost ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold disabled:opacity-40"
+          >
+            <WandSparkles size={16} className="text-fuchsia-300" /> Auto
+          </button>
           <span className={`font-mono text-sm px-3 py-1 rounded-full border ${
             isSetupValid
               ? 'bg-emerald-400/10 border-emerald-400/30 text-emerald-300'
@@ -822,11 +683,55 @@ const startGame = () => {
         )}
       </section>
 
+      <section className="glass rounded-[2rem] p-4 sm:p-8 space-y-5 animate-fadeIn" style={{ animationDelay: '0.25s' }}>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-display font-bold text-lg sm:text-2xl flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center">
+              <Layers size={20} className="text-cyan-300" />
+            </span>
+            Parole
+          </h2>
+          <span className="font-mono text-xs sm:text-sm px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
+            {freshPairsLeft} nuove
+          </span>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {[{ id: 'all', label: 'Tutte', emoji: '🎯', pairs: allPairs }, ...wordCategories].map(c => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => setCategory(c.id)}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-full border text-sm sm:text-base font-semibold transition-all active:scale-95 ${
+                category === c.id
+                  ? 'bg-cyan-400/20 border-cyan-300/60 text-white shadow-[0_0_20px_-6px_rgba(34,211,238,0.8)]'
+                  : 'bg-white/5 border-white/10 text-white/65 hover:bg-white/10'
+              }`}
+            >
+              <span>{c.emoji}</span>
+              {c.label}
+              <span className="font-mono text-xs opacity-50">{c.pairs.length}</span>
+            </button>
+          ))}
+        </div>
+
+        <p className="text-xs sm:text-sm text-white/45">
+          {freshPairsLeft === 0
+            ? 'Avete giocato tutte le coppie di questa categoria: dalla prossima partita si ricomincia da capo.'
+            : 'Le coppie già uscite non tornano finché non le avete giocate tutte.'}
+          {usedPairs.length > 0 && (
+            <button type="button" onClick={() => setUsedPairs([])} className="ml-1.5 underline underline-offset-2 text-cyan-300/80 hover:text-cyan-200">
+              Rimetti tutte in gioco
+            </button>
+          )}
+        </p>
+      </section>
+
       <div className="sticky bottom-4 z-20 mt-auto pt-2">
         <button
           onClick={startGame}
           disabled={!isSetupValid}
-          className="btn-primary w-full py-5 sm:py-6 rounded-2xl font-display font-bold text-lg sm:text-2xl tracking-wide flex items-center justify-center gap-3"
+          className={`btn-primary w-full py-5 sm:py-6 rounded-2xl font-display font-bold text-lg sm:text-2xl tracking-wide flex items-center justify-center gap-3 ${isSetupValid ? 'animate-glow' : ''}`}
         >
           <Play size={28} fill="currentColor" /> INIZIA PARTITA
         </button>
@@ -859,16 +764,21 @@ const startGame = () => {
 
         {/* key: ogni giocatore riparte con la carta coperta, senza animazione di ritorno */}
         <div key={currentPlayerIndex} className="w-full flex flex-col items-center animate-fadeIn">
+          <div className="mb-4 animate-bounce-in">
+            <PlayerAvatar name={player.name} className="w-20 h-20 sm:w-24 sm:h-24 shadow-2xl" rounded="rounded-3xl" />
+          </div>
           <p className="text-white/50 text-lg sm:text-xl font-medium">Passa il telefono a</p>
-          <h2 className="font-display font-black text-4xl sm:text-6xl mt-2 mb-10 break-words max-w-full">
-            <span className="text-gradient">{player.name}</span>
+          <h2 className="font-display font-black text-4xl sm:text-6xl mt-2 mb-10 break-words max-w-full animate-blur-in">
+            <span className={isOwner(player.name) ? 'text-gold' : 'text-gradient'}>{player.name}</span>
+            {isOwner(player.name) && ' 👑'}
           </h2>
 
-          <div className="flip w-full max-w-sm sm:max-w-md h-[440px] sm:h-[480px]">
+          <Tilt className="w-full max-w-sm sm:max-w-md" glareClassName="rounded-[2.5rem]" max={10}>
+          <div className="flip w-full h-[440px] sm:h-[480px]">
             <div className={`flip-inner w-full h-full ${isWordRevealed ? 'is-flipped' : ''}`}>
               <button
                 type="button"
-                onClick={handleReveal}
+                onClick={() => { buzz(25); handleReveal(); }}
                 disabled={isWordRevealed}
                 className="flip-face card-pattern group rounded-[2.5rem] border border-white/10 shadow-2xl flex flex-col items-center justify-center gap-8 p-8 cursor-pointer overflow-hidden"
               >
@@ -879,8 +789,9 @@ const startGame = () => {
                 <div className="relative w-32 h-32 sm:w-36 sm:h-36">
                   <span className="pulse-ring" />
                   <span className="pulse-ring" style={{ animationDelay: '1.2s' }} />
-                  <div className="relative w-full h-full rounded-full bg-violet-500/15 border border-violet-400/40 flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:bg-violet-500/25">
+                  <div className="relative w-full h-full rounded-full bg-violet-500/15 border border-violet-400/40 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:bg-violet-500/25">
                     <Fingerprint size={72} strokeWidth={1.4} className="text-violet-200" />
+                    <span className="scan-bar" />
                   </div>
                 </div>
                 <div>
@@ -897,6 +808,7 @@ const startGame = () => {
                   ? 'bg-linear-to-br from-white to-slate-300 text-slate-900 border-white shadow-[0_0_80px_-20px_rgba(255,255,255,0.6)]'
                   : 'card-pattern border-violet-400/30 shadow-[0_0_80px_-20px_rgba(167,139,250,0.7)]'
               }`}>
+                {isWordRevealed && <span className="holo-sweep" aria-hidden="true" />}
                 {isWordRevealed && (
                   <div className="flex flex-col items-center w-full gap-8 animate-fadeIn">
                     <div className={`font-mono text-xs sm:text-sm font-bold uppercase tracking-[0.3em] ${isMrWhite ? 'text-slate-500' : 'text-violet-300/70'}`}>
@@ -910,7 +822,7 @@ const startGame = () => {
                       </div>
                     ) : (
                       <div className={`font-display font-black ${wordSize(player.word)} leading-tight break-words hyphens-auto w-full text-white drop-shadow-[0_0_30px_rgba(167,139,250,0.65)]`}>
-                        {player.word}
+                        <ScrambleText text={player.word} delay={300} />
                       </div>
                     )}
                     <button
@@ -926,13 +838,19 @@ const startGame = () => {
               </div>
             </div>
           </div>
+          </Tilt>
         </div>
       </div>
     );
   };
 
   const renderPlaying = () => {
-    const stats = [
+    const alivePlayers = players.filter(p => p.isAlive);
+    const round = eliminationOrder.length + 1;
+    const lastOutId = eliminationOrder[eliminationOrder.length - 1];
+    // Timer, votazione e lista compaiono solo quando la roulette si è fermata
+    const orderDone = spunRound >= round || prefersReducedMotion();
+    const aliveCounts = [
       { label: 'Civili', icon: Shield, accent: 'text-emerald-300', count: players.filter(p => p.role === 'Civile' && p.isAlive).length },
       { label: 'Undercover', icon: VenetianMask, accent: 'text-rose-300', count: players.filter(p => p.role === 'Undercover' && p.isAlive).length },
       { label: 'Mr. White', icon: Ghost, accent: 'text-white', count: players.filter(p => p.role === 'Mr. White' && p.isAlive).length },
@@ -940,11 +858,16 @@ const startGame = () => {
 
     return (
       // Niente animazioni su questo contenitore: un transform romperebbe il "fixed" della modale
-      <div className="flex flex-col w-full flex-1">
+      <div className="flex flex-col gap-5 sm:gap-6 w-full flex-1">
+        {isVoting && !eliminatedJustNow && (
+          <SecretVote voters={alivePlayers} onEliminate={handleEliminate} onClose={() => setIsVoting(false)} />
+        )}
+
         {/* Modale Eliminazione */}
         {eliminatedJustNow && (
           <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-md animate-fadeIn">
-            <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
+            <div className="fixed inset-0 bg-rose-600 pointer-events-none animate-flash" />
+            <div className="min-h-full flex items-center justify-center p-4 sm:p-6 animate-shake">
               <div className="relative glass bg-[#120e24]/90 rounded-[2.5rem] p-7 sm:p-12 max-w-lg w-full text-center space-y-7 overflow-hidden animate-bounce-in">
                 <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full bg-rose-600/30 blur-3xl pointer-events-none" />
 
@@ -960,7 +883,7 @@ const startGame = () => {
                 <div className={`relative p-6 sm:p-8 rounded-[1.75rem] bg-black/30 border border-white/10 ${roleStyles[eliminatedJustNow.role].glow}`}>
                   <div className="font-mono text-xs sm:text-sm font-bold text-white/40 uppercase tracking-[0.3em] mb-4">Il suo ruolo era</div>
                   <div className={`font-display font-black text-3xl sm:text-4xl ${roleStyles[eliminatedJustNow.role].text} animate-stamp`}>
-                    {eliminatedJustNow.role}
+                    <ScrambleText text={eliminatedJustNow.role} delay={350} duration={700} />
                   </div>
                 </div>
 
@@ -1007,16 +930,25 @@ const startGame = () => {
           </div>
         )}
 
-        <header className="text-center mb-6 sm:mb-8 animate-fadeIn">
-          <div className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.3em] uppercase text-rose-300/80 mb-3">
-            <Vote size={14} /> Votazione in corso
+        <header className="text-center animate-fadeIn">
+          <div key={round} className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.3em] uppercase text-rose-300/80 mb-3 animate-bounce-in">
+            <Vote size={14} /> Round {round}
           </div>
           <h2 className="font-display font-black text-3xl sm:text-5xl">Fase di Gioco</h2>
           <p className="text-white/55 text-base sm:text-lg mt-3">Discutete tra di voi e votate chi eliminare.</p>
         </header>
 
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 animate-fadeIn" style={{ animationDelay: '0.1s' }}>
-          {stats.map(stat => {
+        <div className="animate-fadeIn" style={{ animationDelay: '0.05s' }}>
+          <SpeakingOrder key={`order-${round}`} players={alivePlayers} onDone={() => setSpunRound(round)} />
+        </div>
+
+        {orderDone && (<>
+        <div className="animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+          <DiscussionTimer key={`timer-${round}`} duration={timerDuration} onDurationChange={setTimerDuration} />
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 animate-fadeIn" style={{ animationDelay: '0.15s' }}>
+          {aliveCounts.map(stat => {
             const Icon = stat.icon;
             return (
               <div key={stat.label} className="glass rounded-2xl p-3 sm:p-5 text-center">
@@ -1028,20 +960,39 @@ const startGame = () => {
           })}
         </div>
 
+        <div className="animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+          <button
+            type="button"
+            onClick={() => setIsVoting(true)}
+            className="w-full py-5 rounded-2xl font-display font-bold text-lg sm:text-xl flex items-center justify-center gap-3 bg-linear-to-r from-rose-500 via-fuchsia-600 to-violet-600 shadow-[0_14px_40px_-12px_rgba(244,63,94,0.8)] transition-all hover:brightness-110 active:scale-[0.98]"
+          >
+            <Vote size={24} /> Votazione segreta
+          </button>
+          <p className="text-center text-white/40 text-xs sm:text-sm mt-2">oppure eliminate direttamente dalla lista</p>
+        </div>
+
         <div className="space-y-3 flex-1">
-          {players.map((player, i) => (
+          {players.map((player, i) => {
+            const isDying = !player.isAlive && player.id === lastOutId && !eliminatedJustNow;
+            return (
             <div
               key={player.id}
-              style={{ animationDelay: `${0.15 + i * 0.05}s` }}
-              className={`animate-fadeIn flex items-center justify-between gap-3 p-3 sm:p-5 rounded-2xl border transition-all duration-500 ${
+              style={{ animationDelay: `${0.25 + i * 0.05}s` }}
+              className={`relative flex items-center justify-between gap-3 p-3 sm:p-5 rounded-2xl border transition-all duration-500 ${
+                isDying ? 'animate-die' : 'animate-fadeIn'
+              } ${
                 player.isAlive ? 'glass hover:border-white/20' : 'bg-white/[0.02] border-white/5'
               }`}
             >
+              {isDying && <DeathBurst key={player.id} />}
               <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                <div className={`shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center font-display font-black text-xl ${
-                  player.isAlive ? `bg-linear-to-br ${avatarGradient(player.name)} shadow-lg` : 'bg-white/5 text-white/40'
-                }`}>
-                  {player.isAlive ? player.name.charAt(0).toUpperCase() : <Skull size={22} />}
+                <div className="relative shrink-0">
+                  <PlayerAvatar name={player.name} className="w-12 h-12 sm:w-14 sm:h-14 shadow-lg" rounded="rounded-2xl" dead={!player.isAlive} />
+                  {!player.isAlive && (
+                    <span className="absolute inset-0 flex items-center justify-center text-white/85">
+                      <Skull size={22} />
+                    </span>
+                  )}
                 </div>
                 <div className="min-w-0">
                   <div className={`font-bold text-lg sm:text-2xl truncate ${player.isAlive ? '' : 'line-through text-white/40'}`}>
@@ -1057,15 +1008,17 @@ const startGame = () => {
 
               {player.isAlive && (
                 <button
-                  onClick={() => eliminatePlayer(player.id)}
+                  onClick={() => handleEliminate(player.id)}
                   className="shrink-0 flex items-center gap-2 bg-rose-500/15 text-rose-300 border border-rose-500/30 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-bold transition-all hover:bg-rose-500 hover:text-white hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.8)] active:scale-95"
                 >
                   <Skull size={18} /> Elimina
                 </button>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
+        </>)}
       </div>
     );
   };
@@ -1076,41 +1029,69 @@ const startGame = () => {
       .map(name => ({ name, score: scores[name] || 0 }))
       .sort((a, b) => b.score - a.score);
     const maxScore = Math.max(1, ...ranking.map(r => r.score));
+    const isMrWhiteWin = winner === 'mrWhite';
 
     return (
       <div className="relative flex flex-col w-full flex-1 justify-center text-center space-y-6 sm:space-y-8">
         <Confetti />
 
         <section
-          className={`relative overflow-hidden glass rounded-[2.5rem] px-6 py-12 sm:p-14 border ${theme.ring} animate-bounce-in`}
-          style={{ boxShadow: `0 0 120px -30px ${theme.glow}` }}
+          className={`relative overflow-hidden glass spin-border rounded-[2.5rem] px-6 py-12 sm:p-14 border ${theme.ring} animate-bounce-in`}
+          style={{ boxShadow: `0 0 120px -30px ${theme.glow}`, '--spin-color': theme.spin }}
         >
           <div
             className="absolute inset-0 pointer-events-none"
             style={{ background: `radial-gradient(circle at 50% 0%, ${theme.glow}, transparent 65%)` }}
           />
+          <Fireworks radius={70} />
           <div className="relative">
-            <div className="relative inline-block mb-6 animate-floaty">
-              <Crown size={88} strokeWidth={1.5} className="text-amber-300 drop-shadow-[0_0_25px_rgba(252,211,77,0.7)]" />
+            <div className="relative inline-block mb-6 animate-drop"><div className="rays rays-sm" aria-hidden="true" /><div className="relative animate-floaty">
+              {isMrWhiteWin
+                ? <Ghost size={88} strokeWidth={1.5} className="text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.8)]" />
+                : <Crown size={88} strokeWidth={1.5} className="text-amber-300 drop-shadow-[0_0_25px_rgba(252,211,77,0.7)]" />}
               <Sparkles size={28} className="absolute -top-2 -right-6 text-amber-200 animate-pulse" />
-            </div>
+            </div></div>
             <div className="font-mono text-xs sm:text-sm tracking-[0.35em] uppercase text-white/50 mb-4">Partita conclusa</div>
-            <h2 className={`font-display font-black text-[clamp(1.75rem,8vw,3.75rem)] leading-[1.05] bg-linear-to-r ${theme.gradient} bg-clip-text text-transparent`}>
+            <h2 className={`font-display font-black text-[clamp(1.75rem,8vw,3.75rem)] leading-[1.05] bg-linear-to-r ${theme.gradient} bg-clip-text text-transparent ${isMrWhiteWin ? 'animate-erase' : 'animate-blur-in'}`} style={{ animationDelay: isMrWhiteWin ? '1.2s' : '0.3s' }}>
               {theme.title}
             </h2>
             <p className="font-medium text-lg sm:text-2xl text-white/65 mt-5">{theme.desc}</p>
           </div>
         </section>
 
+        <RoleReveal players={players} />
+
         <section className="glass rounded-[2rem] p-4 sm:p-10 space-y-5 text-left animate-fadeIn" style={{ animationDelay: '0.2s' }}>
           <h3 className="font-display font-bold text-xl sm:text-3xl flex items-center gap-3">
             <Trophy size={28} className="text-amber-300" /> Classifica Punti
           </h3>
+          {!groupCode ? (
+            <button
+              type="button"
+              onClick={() => setShowStats(true)}
+              className="w-full flex items-center gap-2 text-left text-sm text-amber-200/90 bg-amber-400/[0.07] border border-amber-400/25 rounded-xl px-3 py-2.5 hover:bg-amber-400/[0.12] transition-colors"
+            >
+              <CloudOff size={16} className="shrink-0" />
+              <span>Punti validi solo per questa sessione. <span className="underline underline-offset-2">Collega un gruppo</span> per salvarli online.</span>
+            </button>
+          ) : cloudSaveError ? (
+            <div className="flex items-center gap-2 text-sm text-rose-200 bg-rose-500/10 border border-rose-400/30 rounded-xl px-3 py-2.5">
+              <CloudOff size={16} className="shrink-0" /> Salvataggio online non riuscito ({cloudSaveError}).
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-sm text-white/50">
+              <Cloud size={16} className={cloud.status === 'online' ? 'text-emerald-300' : 'text-amber-300'} />
+              {cloud.status === 'online'
+                ? <>Salvato nel gruppo <span className="font-mono text-white/70">{groupCode}</span></>
+                : 'Salvato sul telefono: si sincronizza appena torna la rete'}
+            </div>
+          )}
           <div className="space-y-3">
             {ranking.map(({ name, score }, i) => (
               <div
                 key={name}
-                className={`relative overflow-hidden flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border ${
+                style={{ animationDelay: `${0.3 + i * 0.08}s` }}
+                className={`relative overflow-hidden flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border animate-slide-in ${
                   i === 0 && score > 0 ? 'border-amber-300/40 bg-amber-300/[0.06]' : 'border-white/5 bg-white/[0.03]'
                 }`}
               >
@@ -1123,9 +1104,10 @@ const startGame = () => {
                 }`}>
                   {i + 1}
                 </span>
-                <span className="relative flex-1 min-w-0 font-bold text-lg sm:text-xl truncate">{name}</span>
+                <PlayerAvatar name={name} className="w-9 h-9 sm:w-10 sm:h-10" rounded="rounded-lg" />
+                <span className="relative flex-1 min-w-0 font-bold text-lg sm:text-xl truncate">{isOwner(name) && '👑 '}{name}</span>
                 <span className="relative font-display font-black text-xl sm:text-2xl text-violet-200">
-                  {score}<span className="text-sm text-white/40 ml-1">pt</span>
+                  <CountUp value={score} delay={400 + i * 80} /><span className="text-sm text-white/40 ml-1">pt</span>
                 </span>
               </div>
             ))}
@@ -1158,13 +1140,23 @@ const startGame = () => {
           <RefreshCw size={28} className="transition-transform duration-500 group-hover:rotate-180" />
           Nuova Partita
         </button>
+
+        <button
+          type="button"
+          onClick={() => setShowStats(true)}
+          className="btn-ghost w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 animate-fadeIn"
+          style={{ animationDelay: '0.5s' }}
+        >
+          <ChartBar size={20} className="text-violet-300" /> Statistiche
+        </button>
       </div>
     );
   };
 
 
   return (
-    // Sfondo principale che copre tutto e permette lo scroll
+    <AvatarContext.Provider value={{ avatars }}>
+    {/* Sfondo principale che copre tutto e permette lo scroll */}
     <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden font-sans text-white selection:bg-fuchsia-500/40">
       <div className="scene" aria-hidden="true">
         <div className="orb orb-1" />
@@ -1172,24 +1164,75 @@ const startGame = () => {
         <div className="orb orb-3" />
         <div className="grid-overlay" />
         <div className="scanline" />
+        {particles.map((p, i) => (
+          <span
+            key={i}
+            className="particle"
+            style={{ left: p.left, width: p.size, height: p.size, background: p.color, animationDuration: p.duration, animationDelay: p.delay }}
+          />
+        ))}
+        <div className="spotlight" />
         <div className="grain" />
       </div>
 
       <div className="relative z-10 min-h-full w-full flex flex-col items-center py-8 sm:py-12 px-4 sm:px-8">
         {/* CONTENITORE GIOCO */}
-        <main className="w-full max-w-2xl flex flex-col flex-1">
-          {gameState === 'setup' && renderSetup()}
-          {gameState === 'distribution' && renderDistribution()}
-          {gameState === 'playing' && renderPlaying()}
-          {gameState === 'gameover' && renderGameOver()}
+        {/* Lampo di transizione a ogni cambio di fase */}
+        <div key={`${gameState}-${showStats}`} className="phase-wipe" aria-hidden="true" />
+
+        {/* Nascosto sopra le finestre a schermo intero, che hanno i loro pulsanti in alto */}
+        {!(gameState === 'playing' && (isVoting || eliminatedJustNow)) && (
+        <button
+          type="button"
+          onClick={toggleMuted}
+          aria-label={muted ? 'Attiva i suoni' : 'Disattiva i suoni'}
+          className="glass fixed top-3 right-3 sm:top-5 sm:right-5 z-30 w-11 h-11 rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95"
+        >
+          {muted ? <VolumeX size={20} className="text-white/50" /> : <Volume2 size={20} className="text-violet-200" />}
+        </button>
+        )}
+        {ownerParty > 0 && <OwnerParty key={ownerParty} onClose={() => setOwnerParty(0)} />}
+        {pickingAvatarFor && (
+          <AvatarPicker
+            name={pickingAvatarFor}
+            onChoose={(id) => { chooseAvatar(pickingAvatarFor, id); setPickingAvatarFor(null); }}
+            onClose={() => setPickingAvatarFor(null)}
+          />
+        )}
+        {/* Mr. White "cancella" lo schermo prima di mostrarsi */}
+        {gameState === 'gameover' && winner === 'mrWhite' && !showStats && <div className="whiteout" aria-hidden="true" />}
+
+        <main className="w-full max-w-2xl flex flex-col flex-1 isolate">
+          {showStats ? (
+            <StatsView
+              stats={cloud.stats}
+              history={cloud.history}
+              scores={scores}
+              groupCode={groupCode}
+              cloudStatus={cloud.status}
+              cloudError={cloud.error}
+              onConnect={setGroupCode}
+              onDisconnect={() => setGroupCode('')}
+              onBack={() => setShowStats(false)}
+              onReset={resetStats}
+            />
+          ) : (
+            <>
+              {gameState === 'setup' && renderSetup()}
+              {gameState === 'distribution' && renderDistribution()}
+              {gameState === 'playing' && renderPlaying()}
+              {gameState === 'gameover' && renderGameOver()}
+            </>
+          )}
         </main>
 
         <footer className="mt-12 mb-2 text-white/40 font-semibold text-base sm:text-lg text-center">
           Made by{' '}
-          <span className="font-bold bg-linear-to-r from-rose-400 to-fuchsia-400 bg-clip-text text-transparent">Pisellino</span>
+          <button type="button" onClick={celebrateOwner} className="font-bold text-gradient inline-block transition-transform hover:scale-110 hover:-rotate-3 cursor-pointer">Pisellino</button>
           {' '}with Love <span className="animate-heartbeat">❤️</span>
         </footer>
       </div>
     </div>
+    </AvatarContext.Provider>
   );
 }
