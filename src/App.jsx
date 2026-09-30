@@ -1,7 +1,7 @@
 
 import './index.css'
 import React, { useState, useEffect } from 'react';
-import { Users, UserPlus, Trash2, Eye, EyeOff, Play, Skull, Crown, AlertCircle, RefreshCw, ChevronRight } from 'lucide-react';
+import { Users, UserPlus, Trash2, Eye, EyeOff, Play, Skull, Crown, AlertCircle, RefreshCw, Shield, VenetianMask, Ghost, Fingerprint, Sparkles, Trophy, Minus, Plus, HatGlasses, Vote } from 'lucide-react';
 
 import logoImage from '/matteo.png';
 
@@ -241,7 +241,82 @@ const wordPairs = [
   // SPAZIO E SCIENZA
   ['Astronauta', 'Cosmonauta'], ['Galassia', 'Nebulosa'], ['Pianeta', 'Asteroide'], ['Sole', 'Stella nana'],
   ['Microscopio', 'Telescopio'], ['Atomo', 'Molecola'], ['Laboratorio', 'Osservatorio'], ['Razzo', 'Navetta'],
-  ['Gravità', 'Magnetismo'], ['Elettricità', 'Energia Solare']
+  ['Gravità', 'Magnetismo'], ['Elettricità', 'Energia Solare'],
+
+  // --- NUOVE PAROLE (SEMPLICI) ---
+
+  // CIBO E BEVANDE
+  ['Carbonara', 'Amatriciana'], ['Spaghetti', 'Bucatini'], ['Penne', 'Fusilli'], ['Minestrone', 'Vellutata'],
+  ['Cotoletta', 'Bistecca'], ['Maritozzo', 'Bignè'], ['Pizzetta', 'Calzone'], ['Supplì', 'Arancino'],
+  ['Olive', 'Capperi'], ['Pomodoro', 'Peperone'], ['Cetriolo', 'Ravanello'], ['Lecca-lecca', 'Caramella'],
+  ['Chewing gum', 'Mentina'], ['Taralli', 'Grissini'], ['Crackers', 'Gallette'], ['Brodo', 'Zuppa'],
+  ['Aranciata', 'Limonata'], ['Cappuccino', 'Latte macchiato'], ['Espresso', 'Americano'], ['Succo di frutta', 'Spremuta'],
+  ['Merendina', 'Snack'], ['Uva', 'Uvetta'], ['Cocco', 'Banana'], ['Zucchero filato', 'Mela caramellata'],
+  ['Barbecue', 'Grigliata'], ['Picnic', 'Pranzo al sacco'], ['Colazione', 'Merenda'], ['Pranzo', 'Cena'],
+  ['Aperitivo', 'Apericena'],
+
+  // CASA E OGGETTI
+  ['Finestra', 'Porta'], ['Balcone', 'Terrazzo'], ['Cantina', 'Soffitta'], ['Garage', 'Posto auto'],
+  ['Vasca', 'Doccia'], ['Lavandino', 'Bidet'], ['Cucina', 'Salotto'], ['Camera da letto', 'Cameretta'],
+  ['Lenzuolo', 'Piumone'], ['Materasso', 'Brandina'], ['Busta', 'Sacchetto'], ['Scatola', 'Cassetta'],
+  ['Barattolo', 'Vasetto'], ['Radio', 'Giradischi'], ['Libro', 'Rivista'], ['Giornale', 'Volantino'],
+  ['Lettera', 'Cartolina'], ['Francobollo', 'Timbro'], ['Candeggina', 'Detersivo'], ['Termosifone', 'Camino'],
+
+  // GIOCHI E GIOCATTOLI
+  ['Palla', 'Pallone'], ['Bambola', 'Peluche'], ['Puzzle', 'Cruciverba'], ['Aquilone', 'Palloncino'],
+  ['Trottola', 'Yo-yo'], ['Biglia', 'Pallina'], ['Nascondino', 'Acchiapparella'], ['Briscola', 'Scala quaranta'],
+  ['Tombola', 'Lotteria'], ['Gratta e vinci', 'Lotto'], ['Cluedo', 'Risiko'], ['Jenga', 'Domino'],
+
+  // ANIMALI E NATURA
+  ['Cavallo', 'Asino'], ['Pony', 'Unicorno'], ['Pesce rosso', 'Pesce palla'], ['Gattino', 'Cucciolo'],
+  ['Rinoceronte', 'Triceratopo'], ['Dinosauro', 'Drago'], ['Tirannosauro', 'Velociraptor'], ['Struzzo', 'Emù'],
+  ['Neve', 'Ghiaccio'], ['Temporale', 'Uragano'], ['Terremoto', 'Tsunami'], ['Onda', 'Marea'],
+  ['Conchiglia', 'Perla'], ['Fiore', 'Pianta'], ['Fuochi d\'artificio', 'Petardo'], ['Primavera', 'Autunno'],
+  ['Mattina', 'Pomeriggio'], ['Notte', 'Sera'],
+
+  // LUOGHI
+  ['Montagne russe', 'Autoscontro'], ['Parco giochi', 'Oratorio'], ['Asilo', 'Scuola elementare'], ['Università', 'Accademia'],
+  ['Mensa', 'Self-service'], ['Pizzeria', 'Paninoteca'], ['Gelateria', 'Yogurteria'], ['Autogrill', 'Benzinaio'],
+  ['Autostrada', 'Superstrada'], ['Rotonda', 'Semaforo'], ['Marciapiede', 'Strisce pedonali'], ['Ascensore', 'Scala mobile'],
+  ['Centro commerciale', 'Outlet'], ['Spa', 'Terme'], ['Sauna', 'Bagno turco'], ['Barbiere', 'Parrucchiere'],
+  ['Canile', 'Gattile'],
+
+  // PERSONAGGI E MESTIERI
+  ['Veterinario', 'Pediatra'], ['Pompiere', 'Vigile'], ['Postino', 'Fattorino'], ['Contadino', 'Allevatore'],
+  ['Pescatore', 'Marinaio'], ['Pirata', 'Corsaro'], ['Cavaliere', 'Guerriero'], ['Ninja', 'Samurai'],
+  ['Re', 'Imperatore'], ['Regina', 'Principessa'], ['Principe', 'Conte'], ['Strega', 'Fata'],
+  ['Mago', 'Stregone'], ['Fantasma', 'Spirito'], ['Zombie', 'Mummia'], ['Babbo Natale', 'Befana'],
+  ['Elfo', 'Folletto'], ['Batman', 'Superman'], ['Spiderman', 'Iron Man'], ['Topolino', 'Paperino'],
+  ['Cenerentola', 'Biancaneve'], ['Pinocchio', 'Peter Pan'], ['Shrek', 'Madagascar'],
+
+  // TECNOLOGIA E POP
+  ['Harry Potter', 'Il Signore degli Anelli'], ['Pokémon', 'Digimon'], ['Super Mario', 'Sonic'], ['Minecraft', 'Fortnite'],
+  ['PlayStation', 'Xbox'], ['Netflix', 'Prime Video'], ['Instagram', 'TikTok'], ['WhatsApp', 'Telegram'],
+  ['Google', 'Wikipedia'], ['Emoji', 'Sticker'], ['Selfie', 'Foto di gruppo'], ['Messaggio', 'Email'],
+  ['Videochiamata', 'Telefonata'], ['Disney', 'Pixar'], ['Sanremo', 'Eurovision'],
+
+  // EVENTI E MOMENTI
+  ['Compleanno', 'Anniversario'], ['Matrimonio', 'Battesimo'], ['Festa a sorpresa', 'Addio al celibato'], ['Carnevale', 'Halloween'],
+  ['Capodanno', 'Ferragosto'], ['Pasqua', 'Pasquetta'], ['Gita', 'Escursione'], ['Crociera', 'Villaggio turistico'],
+  ['Esame', 'Interrogazione'], ['Compito', 'Verifica'], ['Colloquio', 'Riunione'], ['Sciopero', 'Manifestazione'],
+  ['Karaoke', 'Talent show'],
+
+  // SPORT
+  ['Portiere', 'Difensore'], ['Arbitro', 'Allenatore'], ['Rigore', 'Punizione'], ['Gol', 'Canestro'],
+  ['Inter', 'Milan'], ['Maratona', 'Staffetta'], ['Olimpiadi', 'Mondiali'], ['Tuffo', 'Capriola'],
+
+  // CORPO E GESTI
+  ['Mano', 'Piede'], ['Ginocchio', 'Gomito'], ['Capelli', 'Barba'], ['Baffi', 'Pizzetto'],
+  ['Sorriso', 'Risata'], ['Lacrima', 'Sudore'], ['Starnuto', 'Tosse'], ['Singhiozzo', 'Sbadiglio'],
+  ['Bacio', 'Abbraccio'], ['Tatuaggio', 'Piercing'], ['Lentiggini', 'Nei'],
+
+  // MEZZI DI TRASPORTO
+  ['Monopattino', 'Hoverboard'], ['Trattore', 'Ruspa'], ['Camion', 'Furgone'], ['Elicottero', 'Idrovolante'],
+  ['Funivia', 'Seggiovia'], ['Motoscafo', 'Gommone'], ['Pedalò', 'Canotto'], ['Frecciarossa', 'Italo'],
+
+  // MUSICA E ARTE
+  ['Tromba', 'Trombone'], ['Ukulele', 'Mandolino'], ['Microfono', 'Altoparlante'], ['Rap', 'Trap'],
+  ['Rock', 'Metal'], ['Opera', 'Musical'], ['Valzer', 'Tango'], ['Pastelli', 'Acquerelli']
 ];
 
 // --- FUNZIONI DI UTILITA' ---
@@ -253,6 +328,117 @@ const shuffleArray = (array) => {
   }
   return newArray;
 };
+
+// --- STILE ---
+const avatarGradients = [
+  'from-violet-500 to-fuchsia-500',
+  'from-sky-400 to-indigo-500',
+  'from-emerald-400 to-teal-600',
+  'from-amber-400 to-orange-600',
+  'from-rose-400 to-pink-600',
+  'from-cyan-400 to-blue-600',
+  'from-lime-400 to-emerald-600',
+  'from-fuchsia-400 to-purple-700',
+];
+
+// Colore avatar stabile in base al nome
+const avatarGradient = (name) => {
+  let hash = 0;
+  for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) | 0;
+  return avatarGradients[Math.abs(hash) % avatarGradients.length];
+};
+
+const roleStyles = {
+  'Civile': {
+    text: 'text-emerald-300',
+    badge: 'bg-emerald-400/15 text-emerald-300 border-emerald-400/30',
+    glow: 'shadow-[0_0_60px_-10px_rgba(52,211,153,0.55)]',
+  },
+  'Undercover': {
+    text: 'text-rose-400',
+    badge: 'bg-rose-500/15 text-rose-300 border-rose-400/30',
+    glow: 'shadow-[0_0_60px_-10px_rgba(244,63,94,0.6)]',
+  },
+  'Mr. White': {
+    text: 'text-white',
+    badge: 'bg-white/10 text-white border-white/30',
+    glow: 'shadow-[0_0_60px_-10px_rgba(255,255,255,0.45)]',
+  },
+};
+
+const roleOptions = [
+  { id: 'civili', label: 'Civili', desc: 'Hanno la parola segreta', icon: Shield, accent: 'text-emerald-300', chip: 'bg-emerald-400/15 border-emerald-400/30' },
+  { id: 'undercover', label: 'Undercover', desc: 'Hanno una parola simile', icon: VenetianMask, accent: 'text-rose-300', chip: 'bg-rose-500/15 border-rose-400/30' },
+  { id: 'mrWhite', label: 'Mr. White', desc: 'Non ha nessuna parola', icon: Ghost, accent: 'text-white', chip: 'bg-white/10 border-white/25' },
+];
+
+const winThemes = {
+  civili: {
+    title: 'I CIVILI VINCONO!',
+    desc: 'Hanno trovato tutti gli impostori.',
+    gradient: 'from-emerald-300 via-teal-200 to-cyan-300',
+    glow: 'rgba(52,211,153,0.45)',
+    ring: 'border-emerald-400/30',
+  },
+  undercover: {
+    title: 'GLI UNDERCOVER VINCONO!',
+    desc: 'Sono riusciti a mimetizzarsi perfettamente.',
+    gradient: 'from-rose-400 via-fuchsia-400 to-orange-300',
+    glow: 'rgba(244,63,94,0.45)',
+    ring: 'border-rose-400/30',
+  },
+  mrWhite: {
+    title: 'MR. WHITE VINCE!',
+    desc: 'Ha indovinato la parola o è sopravvissuto fino alla fine!',
+    gradient: 'from-white via-slate-200 to-violet-300',
+    glow: 'rgba(255,255,255,0.35)',
+    ring: 'border-white/30',
+  },
+};
+
+const medalStyles = [
+  'bg-linear-to-br from-amber-200 to-yellow-500 text-amber-950 shadow-[0_0_25px_-5px_rgba(252,211,77,0.8)]',
+  'bg-linear-to-br from-slate-100 to-slate-400 text-slate-900',
+  'bg-linear-to-br from-orange-300 to-amber-700 text-orange-950',
+];
+
+// Parole lunghe = font più piccolo, così stanno nella carta anche su mobile
+const wordSize = (word) => {
+  if (word.length <= 6) return 'text-5xl sm:text-7xl';
+  if (word.length <= 10) return 'text-4xl sm:text-6xl';
+  return 'text-3xl sm:text-5xl';
+};
+
+const confettiColors = ['#a78bfa', '#f0abfc', '#fb7185', '#fcd34d', '#34d399', '#22d3ee'];
+const confettiPieces = Array.from({ length: 56 }, (_, i) => ({
+  left: `${(i * 37) % 100}%`,
+  color: confettiColors[i % confettiColors.length],
+  delay: `${(i % 14) * 0.09}s`,
+  dx: `${((i * 53) % 200) - 100}px`,
+  rot: `${((i * 97) % 900) - 450}deg`,
+  round: i % 3 === 0,
+}));
+
+function Confetti() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden" aria-hidden="true">
+      {confettiPieces.map((p, i) => (
+        <span
+          key={i}
+          className="confetti"
+          style={{
+            left: p.left,
+            background: p.color,
+            animationDelay: p.delay,
+            '--dx': p.dx,
+            '--rot': p.rot,
+            ...(p.round && { width: 10, height: 10, borderRadius: 9999 }),
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function App() {
   const [scores, setScores] = useState({}); // NUOVO: Stato per i punteggi
@@ -484,99 +670,165 @@ const startGame = () => {
 
   // --- RENDERS ---
   const renderSetup = () => (
-    <div className="flex flex-col gap-8 w-full p-8 sm:p-12 animate-fadeIn flex-1">
-      <div className="text-center space-y-3 mb-6">
-        <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-slate-800">UNDERCOVER</h1>
-        <p className="text-slate-500 font-medium sm:text-xl">Trova l'impostore tra di voi!</p>
+    <div className="flex flex-col gap-6 sm:gap-8 w-full flex-1">
+      <header className="text-center pt-2 animate-fadeIn">
+        <div className="glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-mono text-[11px] sm:text-xs tracking-[0.25em] text-violet-200/80 uppercase mb-6">
+          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+          Missione classificata
+        </div>
+        <h1 className="font-display font-black tracking-tight leading-none text-[clamp(1.9rem,9.5vw,5.5rem)]">
+          <span className="glitch" data-text="UNDERCOVER">
+            <span className="text-gradient">UNDERCOVER</span>
+          </span>
+        </h1>
+        <p className="mt-4 text-white/60 font-medium text-base sm:text-xl">Trova l'impostore tra di voi!</p>
+      </header>
+
+      <div className="flex justify-center py-4 animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+        <div className="relative polaroid w-64 sm:w-80">
+          <div className="tape" />
+          <img
+            src={logoImage}
+            alt="Logo Undercover"
+            className="w-full aspect-[4/3] object-cover rounded-sm"
+          />
+          <div className="absolute bottom-3.5 left-4 right-4 flex items-center justify-between font-mono text-[11px] sm:text-xs font-bold text-stone-600 tracking-widest">
+            <span>SOGGETTO: MATTEO</span>
+            <span>#007</span>
+          </div>
+          <div className="stamp absolute top-6 right-5 text-rose-600 bg-rose-50/85 text-xs sm:text-sm animate-stamp">
+            Sospettato
+          </div>
+        </div>
       </div>
-      <div className="text-center space-y-3 mb-6">
-        {/* Immagine dalla cartella public */}
-        <img
-          src={logoImage}
-          alt="Logo Undercover"
-          className="mx-auto w-80 object-contain mb-4"
-        />
-      </div>
-      <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
-        <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-slate-700">
-          <Users size={28} className="text-indigo-500"/> 
-          Giocatori ({playersInput.length})
-        </h2>
-        
+
+      <section className="glass rounded-[2rem] p-4 sm:p-8 space-y-5 animate-fadeIn" style={{ animationDelay: '0.15s' }}>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-display font-bold text-lg sm:text-2xl flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl bg-violet-500/20 border border-violet-400/30 flex items-center justify-center">
+              <Users size={20} className="text-violet-300" />
+            </span>
+            Giocatori
+          </h2>
+          <span className="font-mono text-sm px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
+            {playersInput.length}
+          </span>
+        </div>
+
         <form onSubmit={addPlayer} className="flex gap-3">
           <input
             type="text"
             value={newPlayerName}
             onChange={(e) => setNewPlayerName(e.target.value)}
             placeholder="Nome giocatore..."
-            className="flex-1 px-5 py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-xl"
+            className="field flex-1 min-w-0 px-5 py-4 rounded-2xl text-lg"
           />
-          <button type="submit" className="bg-indigo-500 text-white px-6 py-3 rounded-xl hover:bg-indigo-600 transition-colors">
-            <UserPlus size={28} />
+          <button type="submit" aria-label="Aggiungi giocatore" className="btn-primary px-5 sm:px-6 rounded-2xl">
+            <UserPlus size={26} />
           </button>
         </form>
 
-        <div className="flex flex-wrap gap-3 max-h-60 overflow-y-auto pt-2">
-          {playersInput.map((p, i) => (
-            <div key={i} className="flex items-center gap-3 bg-slate-100 px-5 py-3 rounded-xl text-base sm:text-lg font-medium text-slate-700">
-              {p}
-              <button onClick={() => removePlayer(i)} className="text-slate-400 hover:text-indigo-500 transition-colors ml-2">
-                <Trash2 size={20} />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
+        {playersInput.length === 0 ? (
+          <p className="text-center text-white/35 text-sm sm:text-base py-3 font-mono">
+            Nessun agente reclutato… ancora.
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-2.5 max-h-64 overflow-y-auto pt-1">
+            {playersInput.map((p, i) => (
+              <div
+                key={p}
+                className="flex items-center gap-2.5 bg-white/5 border border-white/10 pl-1.5 pr-3 py-1.5 rounded-full text-base sm:text-lg font-semibold animate-bounce-in"
+              >
+                <span className={`w-8 h-8 rounded-full bg-linear-to-br ${avatarGradient(p)} flex items-center justify-center text-sm font-black`}>
+                  {p.charAt(0).toUpperCase()}
+                </span>
+                {p}
+                <button
+                  onClick={() => removePlayer(i)}
+                  aria-label={`Rimuovi ${p}`}
+                  className="text-white/30 hover:text-rose-400 transition-colors ml-1"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
-      <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-700">Distribuzione Ruoli</h2>
-        
-        <div className="space-y-6">
-          {[
-            { id: 'civili', label: 'Civili', desc: 'Hanno la parola segreta', color: 'text-emerald-500', bg: 'bg-emerald-100' },
-            { id: 'undercover', label: 'Undercover', desc: 'Hanno una parola simile', color: 'text-rose-500', bg: 'bg-rose-100' },
-            { id: 'mrWhite', label: 'Mr. White', desc: 'Non ha nessuna parola', color: 'text-slate-500', bg: 'bg-slate-200' }
-          ].map(role => (
-            <div key={role.id} className="flex items-center justify-between">
-              <div>
-                <div className={`font-semibold text-xl flex items-center gap-3`}>
-                  <span className={`w-4 h-4 rounded-full ${role.bg}`}></span>
-                  {role.label}
+      <section className="glass rounded-[2rem] p-4 sm:p-8 space-y-5 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-display font-bold text-lg sm:text-2xl flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl bg-fuchsia-500/20 border border-fuchsia-400/30 flex items-center justify-center">
+              <HatGlasses size={20} className="text-fuchsia-300" />
+            </span>
+            Ruoli
+          </h2>
+          <span className={`font-mono text-sm px-3 py-1 rounded-full border ${
+            isSetupValid
+              ? 'bg-emerald-400/10 border-emerald-400/30 text-emerald-300'
+              : 'bg-amber-400/10 border-amber-400/30 text-amber-300'
+          }`}>
+            {totalRoles}/{playersInput.length}
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {roleOptions.map(role => {
+            const Icon = role.icon;
+            return (
+              <div key={role.id} className="flex items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <span className={`shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl border flex items-center justify-center ${role.chip}`}>
+                    <Icon size={22} className={role.accent} />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="font-bold text-base sm:text-xl">{role.label}</div>
+                    <div className="text-xs sm:text-base text-white/45">{role.desc}</div>
+                  </div>
                 </div>
-                <div className="text-base text-slate-500 mt-1">{role.desc}</div>
+                <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                  <button
+                    onClick={() => updateRoleCount(role.id, -1)}
+                    aria-label={`Meno ${role.label}`}
+                    className="btn-ghost w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center"
+                  >
+                    <Minus size={20} />
+                  </button>
+                  <span
+                    key={rolesCount[role.id]}
+                    className={`w-8 text-center font-display font-black text-2xl ${role.accent} animate-bounce-in`}
+                  >
+                    {rolesCount[role.id]}
+                  </span>
+                  <button
+                    onClick={() => updateRoleCount(role.id, 1)}
+                    aria-label={`Più ${role.label}`}
+                    className="btn-ghost w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center"
+                  >
+                    <Plus size={20} />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-5">
-                <button 
-                  onClick={() => updateRoleCount(role.id, -1)}
-                  className="w-12 h-12 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 transition-colors text-2xl"
-                >-</button>
-                <span className="w-8 text-center font-bold text-2xl">{rolesCount[role.id]}</span>
-                <button 
-                  onClick={() => updateRoleCount(role.id, 1)}
-                  className="w-12 h-12 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 transition-colors text-2xl"
-                >+</button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {!isSetupValid && (
-          <div className="p-5 bg-amber-50 rounded-xl flex items-start gap-4 text-base sm:text-lg text-amber-700 border border-amber-200 mt-6">
-            <AlertCircle size={24} className="mt-0.5 shrink-0" />
+          <div className="p-4 sm:p-5 bg-amber-400/[0.07] rounded-2xl flex items-start gap-3 text-sm sm:text-base text-amber-200/90 border border-amber-400/25">
+            <AlertCircle size={22} className="mt-0.5 shrink-0 text-amber-300" />
             <p>I ruoli totali ({totalRoles}) devono essere uguali ai giocatori ({playersInput.length}). Servono almeno 3 giocatori e 1 Civile.</p>
           </div>
         )}
-      </div>
+      </section>
 
-      <div className="mt-auto pt-6">
+      <div className="sticky bottom-4 z-20 mt-auto pt-2">
         <button
           onClick={startGame}
           disabled={!isSetupValid}
-          className={`w-full py-6 rounded-2xl text-2xl font-bold flex items-center justify-center gap-4 transition-all ${
-            isSetupValid ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-200' : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-          }`}
+          className="btn-primary w-full py-5 sm:py-6 rounded-2xl font-display font-bold text-lg sm:text-2xl tracking-wide flex items-center justify-center gap-3"
         >
-          <Play size={32} /> INIZIA PARTITA
+          <Play size={28} fill="currentColor" /> INIZIA PARTITA
         </button>
       </div>
     </div>
@@ -584,243 +836,326 @@ const startGame = () => {
 
   const renderDistribution = () => {
     const player = players[currentPlayerIndex];
+    const isMrWhite = player.role === 'Mr. White';
     return (
-      <div className="flex flex-col items-center justify-center flex-1 w-full p-8 sm:p-12 text-center animate-fadeIn">
-        <div className="mb-10 text-slate-500 font-medium text-lg sm:text-xl">
-          Giocatore {currentPlayerIndex + 1} di {players.length}
+      <div className="flex flex-col items-center justify-center flex-1 w-full text-center">
+        <div className="flex flex-col items-center gap-3 mb-8 animate-fadeIn">
+          <div className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-white/50">
+            Giocatore {currentPlayerIndex + 1} di {players.length}
+          </div>
+          <div className="flex gap-1.5 flex-wrap justify-center max-w-xs">
+            {players.map((p, i) => (
+              <span
+                key={p.id}
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  i < currentPlayerIndex ? 'w-4 bg-violet-400'
+                  : i === currentPlayerIndex ? 'w-10 bg-linear-to-r from-violet-400 to-fuchsia-400'
+                  : 'w-4 bg-white/15'
+                }`}
+              />
+            ))}
+          </div>
         </div>
-        
-        <h2 className="text-5xl sm:text-6xl font-black text-slate-800 mb-12">
-          Passa a <br/> <span className="text-indigo-600 mt-4 block">{player.name}</span>
-        </h2>
 
-        <div className="bg-white w-full max-w-sm sm:max-w-xl rounded-[3rem] p-10 sm:p-16 shadow-2xl border border-slate-100 min-h-[400px] flex flex-col items-center justify-center transition-all duration-300">
-          {!isWordRevealed ? (
-            <button
-              onClick={handleReveal}
-              className="group flex flex-col items-center gap-8 cursor-pointer"
-            >
-              <div className="w-32 h-32 rounded-full bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
-                <Eye size={64} className="text-indigo-500" />
-              </div>
-              <span className="font-bold text-slate-600 text-2xl">Tocca per rivelare</span>
-            </button>
-          ) : (
-            <div className="space-y-10 flex flex-col items-center animate-fadeIn w-full">
-              <div className="text-base sm:text-lg font-bold uppercase tracking-widest text-slate-400">La tua parola</div>
-              {player.role === 'Mr. White' ? (
-                <div className="space-y-6">
-                  <div className="text-4xl sm:text-5xl font-black text-slate-800">TU SEI MR. WHITE</div>
-                  <p className="text-slate-500 text-lg sm:text-xl max-w-[300px] mx-auto">Non hai nessuna parola. Ascolta gli altri e fingi!</p>
-                </div>
-              ) : (
-                <div className="text-6xl sm:text-7xl font-black text-indigo-600 break-words w-full px-4">{player.word}</div>
-              )}
-              
+        {/* key: ogni giocatore riparte con la carta coperta, senza animazione di ritorno */}
+        <div key={currentPlayerIndex} className="w-full flex flex-col items-center animate-fadeIn">
+          <p className="text-white/50 text-lg sm:text-xl font-medium">Passa il telefono a</p>
+          <h2 className="font-display font-black text-4xl sm:text-6xl mt-2 mb-10 break-words max-w-full">
+            <span className="text-gradient">{player.name}</span>
+          </h2>
+
+          <div className="flip w-full max-w-sm sm:max-w-md h-[440px] sm:h-[480px]">
+            <div className={`flip-inner w-full h-full ${isWordRevealed ? 'is-flipped' : ''}`}>
               <button
-                onClick={handleNextPlayer}
-                className="mt-12 bg-slate-800 text-white px-10 py-5 rounded-full font-bold text-xl flex items-center gap-4 hover:bg-slate-700 transition-colors w-full justify-center"
+                type="button"
+                onClick={handleReveal}
+                disabled={isWordRevealed}
+                className="flip-face card-pattern group rounded-[2.5rem] border border-white/10 shadow-2xl flex flex-col items-center justify-center gap-8 p-8 cursor-pointer overflow-hidden"
               >
-                <EyeOff size={28} /> Nascondi e Prosegui
+                <div className="absolute top-6 left-7 right-7 flex justify-between font-mono text-[10px] sm:text-xs tracking-[0.25em] text-white/40 uppercase">
+                  <span>Top Secret</span>
+                  <span>#{String(currentPlayerIndex + 1).padStart(3, '0')}</span>
+                </div>
+                <div className="relative w-32 h-32 sm:w-36 sm:h-36">
+                  <span className="pulse-ring" />
+                  <span className="pulse-ring" style={{ animationDelay: '1.2s' }} />
+                  <div className="relative w-full h-full rounded-full bg-violet-500/15 border border-violet-400/40 flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:bg-violet-500/25">
+                    <Fingerprint size={72} strokeWidth={1.4} className="text-violet-200" />
+                  </div>
+                </div>
+                <div>
+                  <div className="font-display font-bold text-xl sm:text-2xl">Tocca per rivelare</div>
+                  <div className="text-white/45 text-sm sm:text-base mt-2">Assicurati che nessuno stia guardando</div>
+                </div>
+                <div className="absolute bottom-6 font-mono text-[10px] sm:text-xs tracking-[0.3em] text-white/25 uppercase">
+                  Solo per i tuoi occhi
+                </div>
               </button>
+
+              <div className={`flip-face flip-back rounded-[2.5rem] border flex flex-col items-center justify-center p-7 sm:p-10 overflow-hidden ${
+                isMrWhite
+                  ? 'bg-linear-to-br from-white to-slate-300 text-slate-900 border-white shadow-[0_0_80px_-20px_rgba(255,255,255,0.6)]'
+                  : 'card-pattern border-violet-400/30 shadow-[0_0_80px_-20px_rgba(167,139,250,0.7)]'
+              }`}>
+                {isWordRevealed && (
+                  <div className="flex flex-col items-center w-full gap-8 animate-fadeIn">
+                    <div className={`font-mono text-xs sm:text-sm font-bold uppercase tracking-[0.3em] ${isMrWhite ? 'text-slate-500' : 'text-violet-300/70'}`}>
+                      {isMrWhite ? 'La tua identità' : 'La tua parola'}
+                    </div>
+                    {isMrWhite ? (
+                      <div className="space-y-4">
+                        <Ghost size={60} className="mx-auto animate-floaty" />
+                        <div className="font-display font-black text-3xl sm:text-4xl leading-tight">TU SEI<br />MR. WHITE</div>
+                        <p className="text-slate-600 text-base sm:text-lg max-w-[280px] mx-auto">Non hai nessuna parola. Ascolta gli altri e fingi!</p>
+                      </div>
+                    ) : (
+                      <div className={`font-display font-black ${wordSize(player.word)} leading-tight break-words hyphens-auto w-full text-white drop-shadow-[0_0_30px_rgba(167,139,250,0.65)]`}>
+                        {player.word}
+                      </div>
+                    )}
+                    <button
+                      onClick={handleNextPlayer}
+                      className={`mt-2 w-full px-6 py-4 sm:py-5 rounded-full font-bold text-lg sm:text-xl flex items-center justify-center gap-3 transition-all active:scale-95 ${
+                        isMrWhite ? 'bg-slate-900 text-white hover:bg-slate-800' : 'bg-white text-slate-900 hover:bg-violet-100'
+                      }`}
+                    >
+                      <EyeOff size={24} /> Nascondi e Prosegui
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     );
   };
 
-  const renderPlaying = () => (
-    <div className="flex flex-col w-full p-8 sm:p-12 flex-1 relative animate-fadeIn">
-      {/* Modale Eliminazione */}
-      {eliminatedJustNow && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-6 sm:rounded-[3rem]">
-          <div className="bg-white rounded-[2.5rem] p-10 sm:p-12 max-w-lg w-full text-center space-y-8 shadow-2xl animate-bounce-in">
-            <Skull size={88} className="mx-auto text-slate-800" />
-            <div>
-              <h3 className="text-5xl font-black text-slate-800">{eliminatedJustNow.name}</h3>
-              <p className="text-2xl text-slate-500 mt-3">è stato eliminato!</p>
-            </div>
-            
-            <div className="p-8 bg-slate-100 rounded-[2rem]">
-              <div className="text-base font-bold text-slate-400 uppercase mb-3">Il suo ruolo era</div>
-              <div className={`text-4xl font-black ${
-                eliminatedJustNow.role === 'Civile' ? 'text-emerald-500' : 
-                eliminatedJustNow.role === 'Undercover' ? 'text-rose-500' : 'text-slate-600'
-              }`}>
-                {eliminatedJustNow.role}
-              </div>
-            </div>
+  const renderPlaying = () => {
+    const stats = [
+      { label: 'Civili', icon: Shield, accent: 'text-emerald-300', count: players.filter(p => p.role === 'Civile' && p.isAlive).length },
+      { label: 'Undercover', icon: VenetianMask, accent: 'text-rose-300', count: players.filter(p => p.role === 'Undercover' && p.isAlive).length },
+      { label: 'Mr. White', icon: Ghost, accent: 'text-white', count: players.filter(p => p.role === 'Mr. White' && p.isAlive).length },
+    ];
 
-            {eliminatedJustNow.role === 'Mr. White' ? (
-              <form onSubmit={handleMrWhiteGuessSubmit} className="space-y-6 pt-4">
-                <p className="text-lg font-bold text-amber-600">
-                  Mr. White, hai un'ultima possibilità! Scrivi la parola dei Civili per vincere.
-                </p>
-                <input
-                  type="text"
-                  value={mrWhiteGuess}
-                  onChange={(e) => setMrWhiteGuess(e.target.value)}
-                  placeholder="Inserisci la parola segreta..."
-                  className="w-full px-5 py-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all text-xl text-center font-bold text-slate-700"
-                  autoFocus
-                />
-                <div className="flex gap-4">
-                  <button 
-                    type="submit" 
-                    disabled={!mrWhiteGuess.trim()}
-                    className="flex-1 bg-amber-500 disabled:bg-amber-300 disabled:cursor-not-allowed text-white py-5 rounded-2xl font-bold text-xl hover:bg-amber-600 transition-colors"
-                  >
-                    Conferma
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => { setMrWhiteGuess(''); dismissEliminationMessage(); }} 
-                    className="flex-1 bg-slate-200 text-slate-700 py-5 rounded-2xl font-bold text-xl hover:bg-slate-300 transition-colors"
-                  >
-                    Non lo so
-                  </button>
+    return (
+      // Niente animazioni su questo contenitore: un transform romperebbe il "fixed" della modale
+      <div className="flex flex-col w-full flex-1">
+        {/* Modale Eliminazione */}
+        {eliminatedJustNow && (
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-md animate-fadeIn">
+            <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
+              <div className="relative glass bg-[#120e24]/90 rounded-[2.5rem] p-7 sm:p-12 max-w-lg w-full text-center space-y-7 overflow-hidden animate-bounce-in">
+                <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full bg-rose-600/30 blur-3xl pointer-events-none" />
+
+                <div className="relative mx-auto w-24 h-24 rounded-full bg-rose-500/15 border border-rose-400/40 flex items-center justify-center shadow-[0_0_60px_-5px_rgba(244,63,94,0.7)]">
+                  <Skull size={52} className="text-rose-300" />
                 </div>
-              </form>
-            ) : (
-              <button 
-                onClick={dismissEliminationMessage}
-                className="w-full bg-indigo-600 text-white py-5 mt-6 rounded-2xl font-bold text-xl hover:bg-indigo-700 transition-colors"
-              >
-                Continua
-              </button>
-            )}
-          </div>
-        </div>
-      )}
 
-      <div className="text-center mb-10">
-        <h2 className="text-4xl font-black text-slate-800">Fase di Gioco</h2>
-        <p className="text-slate-500 text-lg mt-3">Discutete tra di voi e votate chi eliminare.</p>
-      </div>
-
-      <div className="space-y-5 flex-1 overflow-y-auto pb-8">
-        {players.map((player) => (
-          <div 
-            key={player.id} 
-            className={`flex items-center justify-between p-6 sm:p-8 rounded-[1.5rem] border transition-all ${
-              player.isAlive ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-100 border-slate-200 opacity-60 grayscale'
-            }`}
-          >
-            <div className="flex items-center gap-6">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl ${
-                player.isAlive ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-200 text-slate-500'
-              }`}>
-                {player.name.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <div className={`font-bold text-xl sm:text-2xl ${player.isAlive ? 'text-slate-800' : 'text-slate-500 line-through'}`}>
-                  {player.name}
+                <div className="relative">
+                  <h3 className="font-display font-black text-4xl sm:text-5xl break-words">{eliminatedJustNow.name}</h3>
+                  <p className="text-xl sm:text-2xl text-white/55 mt-3">è stato eliminato!</p>
                 </div>
-                {!player.isAlive && (
-                  <div className="text-base font-semibold text-rose-500 mt-1">{player.role}</div>
+
+                <div className={`relative p-6 sm:p-8 rounded-[1.75rem] bg-black/30 border border-white/10 ${roleStyles[eliminatedJustNow.role].glow}`}>
+                  <div className="font-mono text-xs sm:text-sm font-bold text-white/40 uppercase tracking-[0.3em] mb-4">Il suo ruolo era</div>
+                  <div className={`font-display font-black text-3xl sm:text-4xl ${roleStyles[eliminatedJustNow.role].text} animate-stamp`}>
+                    {eliminatedJustNow.role}
+                  </div>
+                </div>
+
+                {eliminatedJustNow.role === 'Mr. White' ? (
+                  <form onSubmit={handleMrWhiteGuessSubmit} className="relative space-y-5 pt-2">
+                    <p className="text-base sm:text-lg font-bold text-amber-300">
+                      Mr. White, hai un'ultima possibilità! Scrivi la parola dei Civili per vincere.
+                    </p>
+                    <input
+                      type="text"
+                      value={mrWhiteGuess}
+                      onChange={(e) => setMrWhiteGuess(e.target.value)}
+                      placeholder="Inserisci la parola segreta..."
+                      className="field w-full px-5 py-4 rounded-2xl text-xl text-center font-bold focus:!border-amber-400/70 focus:!shadow-[0_0_0_4px_rgba(251,191,36,0.2)]"
+                      autoFocus
+                    />
+                    <div className="flex gap-3">
+                      <button
+                        type="submit"
+                        disabled={!mrWhiteGuess.trim()}
+                        className="flex-1 bg-linear-to-r from-amber-400 to-orange-500 text-amber-950 disabled:opacity-40 disabled:cursor-not-allowed py-4 sm:py-5 rounded-2xl font-bold text-lg sm:text-xl transition-all hover:brightness-110 active:scale-95 shadow-[0_10px_30px_-10px_rgba(251,191,36,0.7)]"
+                      >
+                        Conferma
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setMrWhiteGuess(''); dismissEliminationMessage(); }}
+                        className="btn-ghost flex-1 py-4 sm:py-5 rounded-2xl font-bold text-lg sm:text-xl"
+                      >
+                        Non lo so
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <button
+                    onClick={dismissEliminationMessage}
+                    className="btn-primary relative w-full py-5 rounded-2xl font-bold text-xl"
+                  >
+                    Continua
+                  </button>
                 )}
               </div>
             </div>
-            
-            {player.isAlive && (
-              <button 
-                onClick={() => eliminatePlayer(player.id)}
-                className="bg-rose-100 text-rose-600 px-6 py-3 rounded-xl text-base sm:text-lg font-bold hover:bg-rose-200 transition-colors"
-              >
-                Elimina
-              </button>
-            )}
           </div>
-        ))}
-      </div>
-      
-      <div className="mt-6 p-6 bg-indigo-50 rounded-[1.5rem] border border-indigo-100 text-center">
-        <div className="text-base font-bold text-indigo-800 mb-3">Stato Partita</div>
-        <div className="flex justify-center gap-8 text-base font-bold text-indigo-600">
-          <span>{players.filter(p => p.role === 'Civile' && p.isAlive).length} Civili</span>
-          <span>{players.filter(p => p.role === 'Undercover' && p.isAlive).length} Undercover</span>
-          <span>{players.filter(p => p.role === 'Mr. White' && p.isAlive).length} Mr. White</span>
+        )}
+
+        <header className="text-center mb-6 sm:mb-8 animate-fadeIn">
+          <div className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.3em] uppercase text-rose-300/80 mb-3">
+            <Vote size={14} /> Votazione in corso
+          </div>
+          <h2 className="font-display font-black text-3xl sm:text-5xl">Fase di Gioco</h2>
+          <p className="text-white/55 text-base sm:text-lg mt-3">Discutete tra di voi e votate chi eliminare.</p>
+        </header>
+
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+          {stats.map(stat => {
+            const Icon = stat.icon;
+            return (
+              <div key={stat.label} className="glass rounded-2xl p-3 sm:p-5 text-center">
+                <Icon size={20} className={`mx-auto mb-1.5 ${stat.accent}`} />
+                <div key={stat.count} className={`font-display font-black text-2xl sm:text-4xl ${stat.accent} animate-bounce-in`}>{stat.count}</div>
+                <div className="text-[10px] sm:text-sm font-semibold text-white/50 uppercase tracking-wider mt-0.5">{stat.label}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="space-y-3 flex-1">
+          {players.map((player, i) => (
+            <div
+              key={player.id}
+              style={{ animationDelay: `${0.15 + i * 0.05}s` }}
+              className={`animate-fadeIn flex items-center justify-between gap-3 p-3 sm:p-5 rounded-2xl border transition-all duration-500 ${
+                player.isAlive ? 'glass hover:border-white/20' : 'bg-white/[0.02] border-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                <div className={`shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center font-display font-black text-xl ${
+                  player.isAlive ? `bg-linear-to-br ${avatarGradient(player.name)} shadow-lg` : 'bg-white/5 text-white/40'
+                }`}>
+                  {player.isAlive ? player.name.charAt(0).toUpperCase() : <Skull size={22} />}
+                </div>
+                <div className="min-w-0">
+                  <div className={`font-bold text-lg sm:text-2xl truncate ${player.isAlive ? '' : 'line-through text-white/40'}`}>
+                    {player.name}
+                  </div>
+                  {!player.isAlive && (
+                    <span className={`inline-block mt-1 text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full border ${roleStyles[player.role].badge}`}>
+                      {player.role}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {player.isAlive && (
+                <button
+                  onClick={() => eliminatePlayer(player.id)}
+                  className="shrink-0 flex items-center gap-2 bg-rose-500/15 text-rose-300 border border-rose-500/30 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-bold transition-all hover:bg-rose-500 hover:text-white hover:shadow-[0_0_30px_-5px_rgba(244,63,94,0.8)] active:scale-95"
+                >
+                  <Skull size={18} /> Elimina
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderGameOver = () => {
-    let winTitle = '';
-    let winColor = '';
-    let winDesc = '';
-
-    if (winner === 'civili') {
-      winTitle = 'I CIVILI VINCONO!';
-      winColor = 'text-emerald-500 bg-emerald-50 border-emerald-100';
-      winDesc = 'Hanno trovato tutti gli impostori.';
-    } else if (winner === 'undercover') {
-      winTitle = 'GLI UNDERCOVER VINCONO!';
-      winColor = 'text-rose-500 bg-rose-50 border-rose-100';
-      winDesc = 'Sono riusciti a mimetizzarsi perfettamente.';
-    } else if (winner === 'mrWhite') {
-      winTitle = 'MR. WHITE VINCE!';
-      winColor = 'text-slate-800 bg-slate-100 border-slate-200';
-      winDesc = 'Ha indovinato la parola o è sopravvissuto fino alla fine!';
-    }
+    const theme = winThemes[winner] ?? winThemes.civili;
+    const ranking = playersInput
+      .map(name => ({ name, score: scores[name] || 0 }))
+      .sort((a, b) => b.score - a.score);
+    const maxScore = Math.max(1, ...ranking.map(r => r.score));
 
     return (
-      <div className="flex flex-col w-full p-8 sm:p-12 flex-1 justify-center text-center animate-fadeIn space-y-10">
-        <div className={`p-12 rounded-[3rem] ${winColor} border`}>
-          <Crown size={96} className="mx-auto mb-8 opacity-80" />
-          <h2 className="text-5xl sm:text-6xl font-black mb-6">{winTitle}</h2>
-          <p className="font-medium text-xl sm:text-2xl opacity-80">{winDesc}</p>
-        </div>
+      <div className="relative flex flex-col w-full flex-1 justify-center text-center space-y-6 sm:space-y-8">
+        <Confetti />
 
-        {/* --- INIZIO NUOVO CODICE CLASSIFICA --- */}
-        <div className="bg-white rounded-[3rem] shadow-sm border border-slate-200 p-10 space-y-8">
-          <h3 className="text-3xl font-bold text-slate-800">Classifica Punti</h3>
-          <div className="space-y-4">
-            {playersInput.map(name => ({ name, score: scores[name] || 0 }))
-              .sort((a, b) => b.score - a.score)
-              .map(({ name, score }) => (
-                <div key={name} className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <span className="font-bold text-xl text-slate-700">{name}</span>
-                  <span className="font-black text-2xl text-indigo-600">{score} pt</span>
-                </div>
-              ))}
+        <section
+          className={`relative overflow-hidden glass rounded-[2.5rem] px-6 py-12 sm:p-14 border ${theme.ring} animate-bounce-in`}
+          style={{ boxShadow: `0 0 120px -30px ${theme.glow}` }}
+        >
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: `radial-gradient(circle at 50% 0%, ${theme.glow}, transparent 65%)` }}
+          />
+          <div className="relative">
+            <div className="relative inline-block mb-6 animate-floaty">
+              <Crown size={88} strokeWidth={1.5} className="text-amber-300 drop-shadow-[0_0_25px_rgba(252,211,77,0.7)]" />
+              <Sparkles size={28} className="absolute -top-2 -right-6 text-amber-200 animate-pulse" />
+            </div>
+            <div className="font-mono text-xs sm:text-sm tracking-[0.35em] uppercase text-white/50 mb-4">Partita conclusa</div>
+            <h2 className={`font-display font-black text-[clamp(1.75rem,8vw,3.75rem)] leading-[1.05] bg-linear-to-r ${theme.gradient} bg-clip-text text-transparent`}>
+              {theme.title}
+            </h2>
+            <p className="font-medium text-lg sm:text-2xl text-white/65 mt-5">{theme.desc}</p>
           </div>
-        </div>
-        {/* --- FINE NUOVO CODICE CLASSIFICA --- */}
+        </section>
 
-        {/*<div className="bg-white rounded-[3rem] shadow-sm border border-slate-200 p-10 space-y-8">
-          <h3 className="text-3xl font-bold text-slate-800">Riepilogo Parole</h3>
-          <div className="grid grid-cols-2 gap-6 sm:gap-8">
-            <div className="bg-emerald-50 p-8 rounded-[2rem] border border-emerald-100">
-              <div className="text-base font-bold text-emerald-600 uppercase mb-3">Civili</div>
-              <div className="text-3xl sm:text-4xl font-black text-emerald-800 break-words">{civilianWord}</div>
+        <section className="glass rounded-[2rem] p-4 sm:p-10 space-y-5 text-left animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+          <h3 className="font-display font-bold text-xl sm:text-3xl flex items-center gap-3">
+            <Trophy size={28} className="text-amber-300" /> Classifica Punti
+          </h3>
+          <div className="space-y-3">
+            {ranking.map(({ name, score }, i) => (
+              <div
+                key={name}
+                className={`relative overflow-hidden flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border ${
+                  i === 0 && score > 0 ? 'border-amber-300/40 bg-amber-300/[0.06]' : 'border-white/5 bg-white/[0.03]'
+                }`}
+              >
+                <div
+                  className="absolute inset-y-0 left-0 bg-linear-to-r from-violet-500/25 to-fuchsia-500/5 animate-grow"
+                  style={{ width: `${(score / maxScore) * 100}%`, animationDelay: `${0.4 + i * 0.08}s` }}
+                />
+                <span className={`relative shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-display font-black ${
+                  medalStyles[i] ?? 'bg-white/5 text-white/50'
+                }`}>
+                  {i + 1}
+                </span>
+                <span className="relative flex-1 min-w-0 font-bold text-lg sm:text-xl truncate">{name}</span>
+                <span className="relative font-display font-black text-xl sm:text-2xl text-violet-200">
+                  {score}<span className="text-sm text-white/40 ml-1">pt</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="glass rounded-[2rem] p-4 sm:p-10 space-y-5 text-left animate-fadeIn" style={{ animationDelay: '0.3s' }}>
+          <h3 className="font-display font-bold text-xl sm:text-3xl flex items-center gap-3">
+            <Eye size={28} className="text-violet-300" /> Riepilogo Parole
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="relative overflow-hidden p-6 sm:p-8 rounded-[1.5rem] bg-emerald-400/[0.07] border border-emerald-400/25">
+              <Shield size={120} className="absolute -right-5 -bottom-5 text-emerald-400/10" />
+              <div className="font-mono text-xs sm:text-sm font-bold text-emerald-300/80 uppercase tracking-[0.25em] mb-2">Civili</div>
+              <div className="relative font-display font-black text-2xl sm:text-4xl text-emerald-200 break-words">{civilianWord}</div>
             </div>
-            <div className="bg-rose-50 p-8 rounded-[2rem] border border-rose-100">
-              <div className="text-base font-bold text-rose-600 uppercase mb-3">Undercover</div>
-              <div className="text-3xl sm:text-4xl font-black text-rose-800 break-words">{undercoverWord}</div>
+            <div className="relative overflow-hidden p-6 sm:p-8 rounded-[1.5rem] bg-rose-500/[0.07] border border-rose-400/25">
+              <VenetianMask size={120} className="absolute -right-5 -bottom-5 text-rose-400/10" />
+              <div className="font-mono text-xs sm:text-sm font-bold text-rose-300/80 uppercase tracking-[0.25em] mb-2">Undercover</div>
+              <div className="relative font-display font-black text-2xl sm:text-4xl text-rose-200 break-words">{undercoverWord}</div>
             </div>
           </div>
-        </div>*/}
-        <div className="bg-white rounded-[2rem] sm:rounded-[3rem] shadow-sm border border-slate-200 p-6 sm:p-10 space-y-6 sm:space-y-8">
-          <h3 className="text-2xl sm:text-3xl font-bold text-slate-800">Riepilogo Parole</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
-            <div className="bg-emerald-50 p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-emerald-100">
-              <div className="text-sm sm:text-base font-bold text-emerald-600 uppercase mb-2 sm:mb-3">Civili</div>
-              <div className="text-3xl sm:text-4xl font-black text-emerald-800 break-words">{civilianWord}</div>
-            </div>
-            <div className="bg-rose-50 p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-rose-100">
-              <div className="text-sm sm:text-base font-bold text-rose-600 uppercase mb-2 sm:mb-3">Undercover</div>
-              <div className="text-3xl sm:text-4xl font-black text-rose-800 break-words">{undercoverWord}</div>
-            </div>
-          </div>
-        </div>
+        </section>
 
         <button
           onClick={resetGame}
-          className="w-full bg-slate-800 hover:bg-slate-900 text-white p-8 rounded-[2.5rem] font-bold text-2xl sm:text-3xl transition-all shadow-lg shadow-slate-200 active:scale-95 flex items-center justify-center gap-4"
+          className="btn-primary group w-full py-6 sm:py-7 rounded-[2rem] font-display font-bold text-xl sm:text-2xl flex items-center justify-center gap-4 animate-fadeIn"
+          style={{ animationDelay: '0.4s' }}
         >
-          <RefreshCw size={32} />
+          <RefreshCw size={28} className="transition-transform duration-500 group-hover:rotate-180" />
           Nuova Partita
         </button>
       </div>
@@ -830,35 +1165,30 @@ const startGame = () => {
 
   return (
     // Sfondo principale che copre tutto e permette lo scroll
-    <div className="fixed inset-0 w-full h-full overflow-y-auto bg-[#e2e8f0] font-sans text-slate-900 selection:bg-red-100">
-      
-      {/* Wrapper che centra gli elementi e li mette in colonna (flex-col) */}
-      <div className="min-h-screen w-full flex flex-col items-center py-10 px-4 sm:px-8">
-        
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-          @keyframes bounceIn { 
-            0% { opacity: 0; transform: scale(0.9); } 
-            50% { opacity: 1; transform: scale(1.05); } 
-            100% { opacity: 1; transform: scale(1); } 
-          }
-          .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
-          .animate-bounce-in { animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        `}} />
-        
+    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden font-sans text-white selection:bg-fuchsia-500/40">
+      <div className="scene" aria-hidden="true">
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+        <div className="grid-overlay" />
+        <div className="scanline" />
+        <div className="grain" />
+      </div>
+
+      <div className="relative z-10 min-h-full w-full flex flex-col items-center py-8 sm:py-12 px-4 sm:px-8">
         {/* CONTENITORE GIOCO */}
-        <div className="w-full max-w-4xl bg-white shadow-2xl rounded-[3rem] border border-slate-200 flex flex-col relative">
+        <main className="w-full max-w-2xl flex flex-col flex-1">
           {gameState === 'setup' && renderSetup()}
           {gameState === 'distribution' && renderDistribution()}
           {gameState === 'playing' && renderPlaying()}
           {gameState === 'gameover' && renderGameOver()}
-        </div>
+        </main>
 
-        {/* FOOTER - Ora forzatamente sotto grazie a flex-col e mt-auto o mt-8 */}
-        <div className="mt-10 mb-6 text-slate-500 font-bold text-lg animate-fadeIn text-center">
-          Made by <span className="text-red-600">Pisellino</span> with Love ❤️
-        </div>
-
+        <footer className="mt-12 mb-2 text-white/40 font-semibold text-base sm:text-lg text-center">
+          Made by{' '}
+          <span className="font-bold bg-linear-to-r from-rose-400 to-fuchsia-400 bg-clip-text text-transparent">Pisellino</span>
+          {' '}with Love <span className="animate-heartbeat">❤️</span>
+        </footer>
       </div>
     </div>
   );
