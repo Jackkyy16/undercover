@@ -9,7 +9,7 @@ import {
   collection, doc, getDocs, increment, limit, onSnapshot, orderBy, query, serverTimestamp, writeBatch,
 } from 'firebase/firestore';
 import { db, ensureSignedIn } from './firebase';
-import { winnerRole } from './lib';
+import { winnerRoles } from './lib';
 
 const HISTORY_SIZE = 30;
 
@@ -79,11 +79,11 @@ export function useGroupStats(groupCode) {
 // Salva una partita finita: punti e statistiche con incrementi atomici
 // (due telefoni che salvano insieme non si sovrascrivono) + voce nello storico.
 export async function recordGameOnline(groupCode, { players, winningRole, points, firstOutId, guesserName, entry }) {
-  const winningPlayerRole = winnerRole[winningRole];
+  const winningPlayerRoles = winnerRoles[winningRole] ?? [];
   const scores = {};
   const stats = {};
   players.forEach(p => {
-    const won = p.role === winningPlayerRole;
+    const won = winningPlayerRoles.includes(p.role);
     const s = {
       games: increment(1),
       roles: { [p.role]: { played: increment(1), ...(won && { won: increment(1) }) } },

@@ -9,6 +9,7 @@ const WINNER_LABELS = {
   civili: { label: 'Vincono i Civili', className: 'bg-emerald-400/15 text-emerald-300 border-emerald-400/30' },
   undercover: { label: 'Vincono gli Undercover', className: 'bg-rose-500/15 text-rose-300 border-rose-400/30' },
   mrWhite: { label: 'Vince Mr. White', className: 'bg-white/10 text-white border-white/30' },
+  impostori: { label: 'Vincono Undercover e Mr. White', className: 'bg-fuchsia-500/15 text-fuchsia-200 border-fuchsia-400/30' },
 };
 
 const num = (v) => (Number.isFinite(v) ? v : 0);

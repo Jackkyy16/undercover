@@ -5,7 +5,7 @@ import { Users, UserPlus, Trash2, Eye, EyeOff, Play, Skull, Crown, AlertCircle, 
 
 import logoImage from '/matteo.png';
 import { wordCategories } from './words';
-import { shuffleArray, isOwner, roleStyles, prefersReducedMotion, buzz } from './lib';
+import { shuffleArray, isOwner, roleStyles, prefersReducedMotion, buzz, wordSize, winnerRoles, rolePoints } from './lib';
 import { AvatarContext } from './avatarData';
 import { PlayerAvatar, AvatarPicker } from './avatars';
 import { Confetti, ScrambleText, CountUp, Tilt, Typewriter, Fireworks, OwnerParty, DeathBurst } from './effects';
@@ -17,6 +17,7 @@ import DiscussionTimer from './components/DiscussionTimer';
 import SecretVote from './components/SecretVote';
 import StatsView from './components/StatsView';
 import RoleReveal from './components/RoleReveal';
+import WordCheck from './components/WordCheck';
 
 
 const roleOptions = [
@@ -50,6 +51,14 @@ const winThemes = {
     ring: 'border-white/30',
     spin: '#ffffff',
   },
+  impostori: {
+    title: 'UNDERCOVER E MR. WHITE VINCONO!',
+    desc: 'I Civili sono stati eliminati tutti: vittoria condivisa!',
+    gradient: 'from-rose-400 via-fuchsia-300 to-white',
+    glow: 'rgba(217,70,239,0.45)',
+    ring: 'border-fuchsia-400/30',
+    spin: '#f0abfc',
+  },
 };
 
 const medalStyles = [
@@ -57,13 +66,6 @@ const medalStyles = [
   'bg-linear-to-br from-slate-100 to-slate-400 text-slate-900',
   'bg-linear-to-br from-orange-300 to-amber-700 text-orange-950',
 ];
-
-// Parole lunghe = font più piccolo, così stanno nella carta anche su mobile
-const wordSize = (word) => {
-  if (word.length <= 6) return 'text-5xl sm:text-7xl';
-  if (word.length <= 10) return 'text-4xl sm:text-6xl';
-  return 'text-3xl sm:text-5xl';
-};
 
 const particles = Array.from({ length: 22 }, (_, i) => ({
   left: `${(i * 41 + 7) % 100}%`,
@@ -112,6 +114,7 @@ export default function App() {
   const [mrWhiteGuess, setMrWhiteGuess] = useState('');
   const [eliminationOrder, setEliminationOrder] = useState(savedGame.eliminationOrder ?? []); // id in ordine di eliminazione
   const [isVoting, setIsVoting] = useState(false);
+  const [isCheckingWord, setIsCheckingWord] = useState(false);
   const [spunRound, setSpunRound] = useState(0);
   const [timerDuration, setTimerDuration] = useState(saved.timerDuration ?? 60);
 
@@ -373,13 +376,10 @@ const startGame = () => {
   // NUOVO: Funzione per aggiornare i punteggi a fine partita
   const updateScores = (winningRole) => {
     const points = {};
+    // Ogni ruolo vincitore prende i suoi punti: con la vittoria condivisa
+    // gli Undercover prendono 10 e Mr. White 6, come se avessero vinto da soli
     players.forEach(player => {
-      let pointsToAdd = 0;
-      // Assegnazione punti in base alle regole
-      if (winningRole === 'civili' && player.role === 'Civile') pointsToAdd = 2;
-      if (winningRole === 'undercover' && player.role === 'Undercover') pointsToAdd = 10;
-      if (winningRole === 'mrWhite' && player.role === 'Mr. White') pointsToAdd = 6;
-      if (pointsToAdd > 0) points[player.name] = pointsToAdd;
+      if (winnerRoles[winningRole].includes(player.role)) points[player.name] = rolePoints[player.role];
     });
 
     // Con un gruppo online i punti vanno su Firebase insieme alle statistiche (vedi recordGame)
@@ -425,7 +425,7 @@ const startGame = () => {
     setGameState('gameover');
     setEliminatedJustNow(null);
     if (winningRole === 'civili') sounds.fanfare();
-    else if (winningRole === 'undercover') sounds.sneaky();
+    else if (winningRole === 'undercover' || winningRole === 'impostori') sounds.sneaky();
     else sounds.ghost();
   };
 
@@ -455,9 +455,12 @@ const startGame = () => {
 
     if (aliveUndercovers === 0 && aliveMrWhites === 0) {
       endGame('civili');
+    } else if (aliveCivilians === 0 && aliveUndercovers > 0 && aliveMrWhites > 0) {
+      // Niente più Civili ma restano entrambi gli impostori: vincono insieme
+      endGame('impostori');
     } else if (aliveUndercovers >= aliveCivilians && aliveMrWhites === 0) {
       endGame('undercover');
-    } else if (aliveUndercovers + aliveCivilians === 1 && aliveMrWhites > 0) {
+    } else if (aliveUndercovers === 0 && aliveCivilians <= 1) {
       endGame('mrWhite');
     } else {
       setEliminatedJustNow(null);
@@ -481,6 +484,7 @@ const startGame = () => {
     setMrWhiteGuess('');
     setEliminationOrder([]);
     setIsVoting(false);
+    setIsCheckingWord(false);
   };
 
   const resetStats = () => {
@@ -863,6 +867,10 @@ const startGame = () => {
           <SecretVote voters={alivePlayers} onEliminate={handleEliminate} onClose={() => setIsVoting(false)} />
         )}
 
+        {isCheckingWord && !isVoting && !eliminatedJustNow && (
+          <WordCheck players={alivePlayers} onClose={() => setIsCheckingWord(false)} />
+        )}
+
         {/* Modale Eliminazione */}
         {eliminatedJustNow && (
           <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-md animate-fadeIn">
@@ -936,6 +944,13 @@ const startGame = () => {
           </div>
           <h2 className="font-display font-black text-3xl sm:text-5xl">Fase di Gioco</h2>
           <p className="text-white/55 text-base sm:text-lg mt-3">Discutete tra di voi e votate chi eliminare.</p>
+          <button
+            type="button"
+            onClick={() => setIsCheckingWord(true)}
+            className="btn-ghost mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold"
+          >
+            <Eye size={16} className="text-violet-300" /> Rivedi la tua parola
+          </button>
         </header>
 
         <div className="animate-fadeIn" style={{ animationDelay: '0.05s' }}>
@@ -1181,7 +1196,7 @@ const startGame = () => {
         <div key={`${gameState}-${showStats}`} className="phase-wipe" aria-hidden="true" />
 
         {/* Nascosto sopra le finestre a schermo intero, che hanno i loro pulsanti in alto */}
-        {!(gameState === 'playing' && (isVoting || eliminatedJustNow)) && (
+        {!(gameState === 'playing' && (isVoting || isCheckingWord || eliminatedJustNow)) && (
         <button
           type="button"
           onClick={toggleMuted}

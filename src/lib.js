@@ -40,5 +40,21 @@ export const buzz = (pattern) => {
   try { navigator.vibrate?.(pattern); } catch { /* non supportata */ }
 };
 
-// Da vincitore ('civili' | 'undercover' | 'mrWhite') al ruolo dei giocatori
-export const winnerRole = { civili: 'Civile', undercover: 'Undercover', mrWhite: 'Mr. White' };
+// Parole lunghe = font più piccolo, così stanno nella carta anche su mobile
+export const wordSize = (word) => {
+  if (word.length <= 6) return 'text-5xl sm:text-7xl';
+  if (word.length <= 10) return 'text-4xl sm:text-6xl';
+  return 'text-3xl sm:text-5xl';
+};
+
+// Da vincitore ('civili' | 'undercover' | 'mrWhite' | 'impostori') ai ruoli che vincono.
+// 'impostori': i Civili sono finiti e restano sia Undercover sia Mr. White → vincono entrambi
+export const winnerRoles = {
+  civili: ['Civile'],
+  undercover: ['Undercover'],
+  mrWhite: ['Mr. White'],
+  impostori: ['Undercover', 'Mr. White'],
+};
+
+// Punti a ogni giocatore del ruolo vincitore (anche se eliminato prima)
+export const rolePoints = { 'Civile': 2, 'Undercover': 10, 'Mr. White': 6 };

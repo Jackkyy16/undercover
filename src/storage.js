@@ -49,7 +49,7 @@ export const loadSave = () => {
       civilianWord: g.civilianWord,
       undercoverWord: g.undercoverWord,
       currentPlayerIndex: Number.isInteger(g.currentPlayerIndex) && g.currentPlayerIndex < g.players.length ? g.currentPlayerIndex : 0,
-      winner: ['civili', 'undercover', 'mrWhite'].includes(g.winner) ? g.winner : null,
+      winner: ['civili', 'undercover', 'mrWhite', 'impostori'].includes(g.winner) ? g.winner : null,
       eliminatedJustNow: isValidPlayer(g.eliminatedJustNow) ? g.eliminatedJustNow : null,
       eliminationOrder: Array.isArray(g.eliminationOrder) ? g.eliminationOrder.filter(Number.isInteger) : [],
       categoryLabel: typeof g.categoryLabel === 'string' ? g.categoryLabel : '',
