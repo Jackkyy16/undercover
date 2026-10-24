@@ -283,11 +283,13 @@ const startGame = () => {
 
     rolesArray = shuffleArray(rolesArray);
 
-    // --- NUOVA LOGICA: MR. WHITE AL PRIMO POSTO AL 10% ---
+    // --- NUOVA LOGICA: MR. WHITE AL PRIMO POSTO AL MASSIMO NEL 5% DELLE PARTITE ---
     if (rolesArray[0] === 'Mr. White') {
-      // Math.random() genera un numero tra 0 e 1.
-      // Se è maggiore di 0.10 (cioè il 90% delle volte), spostiamo Mr. White.
-      if (Math.random() > 0.10) {
+      // Dopo il mescolamento Mr. White è primo con probabilità (numero di Mr. White / giocatori).
+      // Lo lasciamo primo solo quanto basta perché in totale sia primo al massimo il 5% delle volte.
+      const naturalChance = rolesCount.mrWhite / rolesArray.length;
+      const keepChance = Math.min(1, 0.05 / naturalChance);
+      if (Math.random() > keepChance) {
         // Cerchiamo il primo ruolo nella lista che NON è Mr. White
         const swapIndex = rolesArray.findIndex(role => role !== 'Mr. White');
         if (swapIndex !== -1) {
